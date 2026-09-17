@@ -1,0 +1,1663 @@
+[
+  {
+    "id": "coep-pune",
+    "name": "COEP Technological University",
+    "city": "Pune",
+    "district": "Pune",
+    "college_type": "Government",
+    "official_website": "https://www.coeptech.ac.in/",
+    "total_seats": 1200,
+    "average_cutoff": 95.4,
+    "branches": [
+      "Computer Science",
+      "Information Technology",
+      "Electronics",
+      "Mechanical",
+      "Civil",
+      "Electrical"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 95.8,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 96.3,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 96.8,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "vjti-mumbai",
+    "name": "Veermata Jijabai Technological Institute",
+    "city": "Mumbai",
+    "district": "Mumbai",
+    "college_type": "Government",
+    "official_website": "https://www.vjti.ac.in/",
+    "total_seats": 1080,
+    "average_cutoff": 93.5,
+    "branches": [
+      "Computer Science",
+      "Information Technology",
+      "Electronics",
+      "Mechanical",
+      "Civil",
+      "Electrical"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 93.9,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 94.5,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 94.9,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "spit-mumbai",
+    "name": "Sardar Patel Institute of Technology",
+    "city": "Mumbai",
+    "district": "Mumbai",
+    "college_type": "Private Autonomous",
+    "official_website": "https://www.spit.ac.in/",
+    "total_seats": 720,
+    "average_cutoff": 91.8,
+    "branches": [
+      "Computer Science",
+      "Information Technology",
+      "Electronics",
+      "Mechanical"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Information Technology",
+        "cutoff": 91.2,
+        "trend": "stable"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Information Technology",
+        "cutoff": 92.1,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Information Technology",
+        "cutoff": 92.6,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "pict-pune",
+    "name": "Pune Institute of Computer Technology",
+    "city": "Pune",
+    "district": "Pune",
+    "college_type": "Private",
+    "official_website": "https://pict.edu/",
+    "total_seats": 780,
+    "average_cutoff": 90.9,
+    "branches": [
+      "Computer Science",
+      "Information Technology",
+      "Electronics",
+      "Mechanical"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 89.8,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 90.4,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 91.2,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "walchand-sangli",
+    "name": "Walchand College of Engineering",
+    "city": "Sangli",
+    "district": "Sangli",
+    "college_type": "Government",
+    "official_website": "https://walchandsangli.ac.in/",
+    "total_seats": 780,
+    "average_cutoff": 89.1,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Civil",
+      "Electrical",
+      "Electronics"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 88.1,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 89.0,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 89.7,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "ramdeobaba-nagpur",
+    "name": "Shri Ramdeobaba College of Engineering and Management",
+    "city": "Nagpur",
+    "district": "Nagpur",
+    "college_type": "Private",
+    "official_website": "https://www.rknec.edu/",
+    "total_seats": 800,
+    "average_cutoff": 90.1,
+    "branches": [
+      "Computer Science",
+      "Information Technology",
+      "Mechanical",
+      "Electronics"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 89.2,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 90.7,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 91.4,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "gcoen-nagpur",
+    "name": "Government College of Engineering, Nagpur",
+    "city": "Nagpur",
+    "district": "Nagpur",
+    "college_type": "Government",
+    "official_website": "https://www.gcoen.ac.in/",
+    "total_seats": 690,
+    "average_cutoff": 83.4,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Electrical",
+      "Electronics",
+      "Civil"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Electrical",
+        "cutoff": 82.1,
+        "trend": "stable"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Electrical",
+        "cutoff": 83.0,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Electrical",
+        "cutoff": 84.0,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "geca-aurangabad",
+    "name": "Government Engineering College, Aurangabad",
+    "city": "Aurangabad",
+    "district": "Aurangabad",
+    "college_type": "Government",
+    "official_website": "https://www.geca.ac.in/",
+    "total_seats": 660,
+    "average_cutoff": 81.0,
+    "branches": [
+      "Mechanical",
+      "Civil",
+      "Electrical",
+      "Electronics"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Mechanical",
+        "cutoff": 79.8,
+        "trend": "stable"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Mechanical",
+        "cutoff": 80.5,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Mechanical",
+        "cutoff": 82.1,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "sggs-nanded",
+    "name": "SGGS Institute of Engineering and Technology",
+    "city": "Nanded",
+    "district": "Nanded",
+    "college_type": "Government",
+    "official_website": "https://sggs.ac.in/",
+    "total_seats": 560,
+    "average_cutoff": 75.7,
+    "branches": [
+      "Mechanical",
+      "Electronics",
+      "Civil",
+      "Electrical"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Mechanical",
+        "cutoff": 74.3,
+        "trend": "stable"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Mechanical",
+        "cutoff": 75.6,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Mechanical",
+        "cutoff": 76.9,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "mit-pune",
+    "name": "MIT Academy of Engineering",
+    "city": "Pune",
+    "district": "Pune",
+    "college_type": "Private",
+    "official_website": "https://www.mitaoe.ac.in/",
+    "total_seats": 660,
+    "average_cutoff": 82.7,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Civil",
+      "Electronics"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 81.6,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 82.4,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 83.5,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "kj-somaiya",
+    "name": "K. J. Somaiya College of Engineering",
+    "city": "Mumbai",
+    "district": "Mumbai",
+    "college_type": "Private",
+    "official_website": "https://kjsce.somaiya.edu/",
+    "total_seats": 765,
+    "average_cutoff": 88.2,
+    "branches": [
+      "Computer Science",
+      "Information Technology",
+      "Mechanical",
+      "Electronics"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 87.0,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 88.0,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 89.1,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "dyp-coe-akurdi",
+    "name": "DY Patil College of Engineering, Akurdi",
+    "city": "Pune",
+    "district": "Pune",
+    "college_type": "Private",
+    "official_website": "https://www.dypcoeakurdi.ac.in/",
+    "total_seats": 700,
+    "average_cutoff": 84.8,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Electronics",
+      "Civil",
+      "Electrical"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 83.9,
+        "trend": "stable"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 84.7,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 85.6,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "jspm-rsscoe",
+    "name": "JSPM Rajarshi Shahu College of Engineering",
+    "city": "Pune",
+    "district": "Pune",
+    "college_type": "Private",
+    "official_website": "https://jspmrscoe.edu.in/",
+    "total_seats": 680,
+    "average_cutoff": 81.9,
+    "branches": [
+      "Computer Science",
+      "Electronics",
+      "Mechanical",
+      "Civil"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 80.8,
+        "trend": "stable"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 82.1,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 82.9,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "sandip-sitrc",
+    "name": "Sandip Institute of Technology and Research Centre",
+    "city": "Nashik",
+    "district": "Nashik",
+    "college_type": "Private",
+    "official_website": "https://sandipfoundation.org/sitrc/",
+    "total_seats": 620,
+    "average_cutoff": 77.4,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Electronics",
+      "Civil"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 76.3,
+        "trend": "stable"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 77.2,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 78.6,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "aissms-pune",
+    "name": "AISSMS College of Engineering",
+    "city": "Pune",
+    "district": "Pune",
+    "college_type": "Private",
+    "official_website": "https://aissmscoe.com/",
+    "total_seats": 510,
+    "average_cutoff": 75.8,
+    "branches": [
+      "Mechanical",
+      "Civil",
+      "Electrical",
+      "Electronics",
+      "Computer Science"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Mechanical",
+        "cutoff": 74.1,
+        "trend": "stable"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Mechanical",
+        "cutoff": 75.6,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Mechanical",
+        "cutoff": 76.5,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "sinhgad-pune",
+    "name": "Sinhgad College of Engineering",
+    "city": "Pune",
+    "district": "Pune",
+    "college_type": "Private",
+    "official_website": "https://www.sinhgad.edu/",
+    "total_seats": 650,
+    "average_cutoff": 79.3,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Civil",
+      "Electronics"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 78.1,
+        "trend": "stable"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 79.2,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 80.4,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "gcoe-amravati",
+    "name": "Government College of Engineering, Amravati",
+    "city": "Amravati",
+    "district": "Amravati",
+    "college_type": "Government",
+    "status": "Government, Autonomous",
+    "institute_code": "01002",
+    "official_website": "https://www.gcoea.ac.in/",
+    "total_seats": 390,
+    "average_cutoff": 81.5,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Civil",
+      "Electrical",
+      "Electronics"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 81.1,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 81.8,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 82.4,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "gcoe-yavatmal",
+    "name": "Government College of Engineering, Yavatmal",
+    "city": "Yavatmal",
+    "district": "Yavatmal",
+    "college_type": "Government",
+    "status": "Government",
+    "institute_code": "01012",
+    "official_website": "https://gcoey.ac.in/",
+    "total_seats": 300,
+    "average_cutoff": 79.2,
+    "branches": [
+      "Civil",
+      "Mechanical",
+      "Electrical",
+      "Electronics"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Mechanical",
+        "cutoff": 77.8,
+        "trend": "stable"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Mechanical",
+        "cutoff": 78.9,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Mechanical",
+        "cutoff": 79.7,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "gcoe-ratnagiri",
+    "name": "Loknete Shamrao Peje Government College of Engineering, Ratnagiri",
+    "city": "Ratnagiri",
+    "district": "Ratnagiri",
+    "college_type": "Government",
+    "status": "Government",
+    "institute_code": "03042",
+    "official_website": "https://www.gcoerang.ac.in/",
+    "total_seats": 300,
+    "average_cutoff": 75.9,
+    "branches": [
+      "Mechanical",
+      "Civil",
+      "Electrical",
+      "Electronics"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Mechanical",
+        "cutoff": 74.1,
+        "trend": "stable"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Mechanical",
+        "cutoff": 75.5,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Mechanical",
+        "cutoff": 77.2,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "gcoe-nagpur",
+    "name": "Government College of Engineering, Nagpur",
+    "city": "Nagpur",
+    "district": "Nagpur",
+    "college_type": "Government",
+    "status": "Government",
+    "institute_code": "04025",
+    "official_website": "https://www.gcoen.ac.in/",
+    "total_seats": 300,
+    "average_cutoff": 82.8,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Electrical",
+      "Civil",
+      "Electronics"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Electrical",
+        "cutoff": 81.4,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Electrical",
+        "cutoff": 82.4,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Electrical",
+        "cutoff": 83.6,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "wce-sangli",
+    "name": "Walchand College of Engineering, Sangli",
+    "city": "Sangli",
+    "district": "Sangli",
+    "college_type": "Government Aided",
+    "status": "Government-Aided, Autonomous",
+    "institute_code": "06007",
+    "official_website": "https://walchandsangli.ac.in/",
+    "total_seats": 660,
+    "average_cutoff": 89.1,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Civil",
+      "Electrical",
+      "Electronics"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 88.1,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 89.0,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 89.7,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "gce-karad",
+    "name": "Government College of Engineering, Karad",
+    "city": "Karad",
+    "district": "Satara",
+    "college_type": "Government",
+    "status": "Government, Autonomous",
+    "institute_code": "06005",
+    "official_website": "https://www.gcekarad.ac.in/",
+    "total_seats": 300,
+    "average_cutoff": 79.5,
+    "branches": [
+      "Mechanical",
+      "Civil",
+      "Electrical",
+      "Computer Science"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 78.6,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 79.4,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 80.5,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "coep",
+    "name": "COEP Technological University",
+    "city": "Pune",
+    "district": "Pune",
+    "college_type": "University",
+    "status": "University, Autonomous",
+    "institute_code": "16006",
+    "official_website": "https://www.coeptech.ac.in/",
+    "total_seats": 1185,
+    "average_cutoff": 95.9,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Electrical",
+      "Civil",
+      "Electronics"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 95.6,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 96.1,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 96.8,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "sfit-mumbai",
+    "name": "St. Francis Institute of Technology",
+    "city": "Mumbai",
+    "district": "Mumbai",
+    "college_type": "Private Autonomous",
+    "status": "Un-Aided, Autonomous, Religious Minority - Christian",
+    "institute_code": "03204",
+    "official_website": "https://www.sfit.ac.in/",
+    "total_seats": 660,
+    "average_cutoff": 89.4,
+    "branches": [
+      "Computer Science",
+      "Information Technology",
+      "Electronics"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 88.5,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 89.3,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 90.1,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "kjsce-mumbai",
+    "name": "K. J. Somaiya Institute of Technology",
+    "city": "Mumbai",
+    "district": "Mumbai",
+    "college_type": "Private Autonomous",
+    "status": "Un-Aided, Autonomous, Linguistic Minority - Gujarathi",
+    "institute_code": "03209",
+    "official_website": "https://kjsit.somaiya.edu/",
+    "total_seats": 480,
+    "average_cutoff": 86.8,
+    "branches": [
+      "Computer Science",
+      "Information Technology",
+      "Electronics"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 85.4,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 86.2,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 86.9,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "kkwagh-nashik",
+    "name": "K. K. Wagh Institute of Engineering Education and Research",
+    "city": "Nashik",
+    "district": "Nashik",
+    "college_type": "Private Autonomous",
+    "status": "Un-Aided, Autonomous",
+    "institute_code": "05121",
+    "official_website": "https://www.kkwagh.edu.in/",
+    "total_seats": 1080,
+    "average_cutoff": 87.4,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Electronics",
+      "Civil"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 86.1,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 87.0,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 88.1,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "ghrce-nagpur",
+    "name": "Ankush Shikshan Sanstha's G.H. Raisoni College of Engineering",
+    "city": "Nagpur",
+    "district": "Nagpur",
+    "college_type": "Private Autonomous",
+    "status": "Un-Aided, Autonomous, Linguistic Minority - Hindi",
+    "institute_code": "04116",
+    "official_website": "https://ghrce.raisoni.net/",
+    "total_seats": 1260,
+    "average_cutoff": 88.9,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Civil",
+      "Electrical",
+      "Electronics"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 87.2,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 88.3,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 89.4,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "kdk-nagpur",
+    "name": "K.D.K. College of Engineering",
+    "city": "Nagpur",
+    "district": "Nagpur",
+    "college_type": "Private Autonomous",
+    "status": "Un-Aided, Autonomous",
+    "institute_code": "04147",
+    "official_website": "https://www.kdkce.edu.in/",
+    "total_seats": 630,
+    "average_cutoff": 82.7,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Civil",
+      "Electrical"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 81.4,
+        "trend": "stable"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 82.1,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 83.0,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "thakur-mumbai",
+    "name": "Thakur College of Engineering and Technology",
+    "city": "Mumbai",
+    "district": "Mumbai",
+    "college_type": "Private Autonomous",
+    "status": "Un-Aided, Autonomous, Linguistic Minority - Hindi",
+    "institute_code": "03176",
+    "official_website": "https://www.tcetmumbai.in/",
+    "total_seats": 1620,
+    "average_cutoff": 86.2,
+    "branches": [
+      "Computer Science",
+      "Information Technology",
+      "Electronics",
+      "Mechanical"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 84.9,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 85.8,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 86.7,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "djsce-mumbai",
+    "name": "Shri Vile Parle Kelvani Mandal's Dwarkadas J. Sanghvi College of Engineering",
+    "city": "Mumbai",
+    "district": "Mumbai",
+    "college_type": "Private Autonomous",
+    "status": "Un-Aided, Autonomous, Linguistic Minority - Gujarathi",
+    "institute_code": "03199",
+    "official_website": "https://www.djsce.ac.in/",
+    "total_seats": 1140,
+    "average_cutoff": 91.8,
+    "branches": [
+      "Computer Science",
+      "Information Technology",
+      "Electronics",
+      "Mechanical"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 90.6,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 91.4,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 92.3,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "kit-kolhapur",
+    "name": "Kolhapur Institute of Technology's College of Engineering",
+    "city": "Kolhapur",
+    "district": "Kolhapur",
+    "college_type": "Private Autonomous",
+    "status": "Un-Aided, Autonomous",
+    "institute_code": "06267",
+    "official_website": "https://kitcoek.in/",
+    "total_seats": 1140,
+    "average_cutoff": 84.1,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Civil",
+      "Electrical"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 82.9,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 83.7,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 84.8,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "dyp-kolhapur",
+    "name": "D.Y. Patil College of Engineering and Technology, Kolhapur",
+    "city": "Kolhapur",
+    "district": "Kolhapur",
+    "college_type": "Private Autonomous",
+    "status": "Un-Aided, Autonomous",
+    "institute_code": "06250",
+    "official_website": "https://coek.dypgroup.edu.in/",
+    "total_seats": 1140,
+    "average_cutoff": 82.7,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Electronics",
+      "Civil"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 81.5,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 82.2,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 83.1,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "tkiet-warananagar",
+    "name": "Tatyasaheb Kore Institute of Engineering and Technology",
+    "city": "Warananagar",
+    "district": "Kolhapur",
+    "college_type": "Private Autonomous",
+    "status": "Un-Aided, Autonomous",
+    "institute_code": "06268",
+    "official_website": "https://tkietwarananagar.org/",
+    "total_seats": 1080,
+    "average_cutoff": 81.4,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Civil",
+      "Electrical"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 79.9,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 80.7,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 81.9,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "wits-solapur",
+    "name": "Walchand Institute of Technology",
+    "city": "Solapur",
+    "district": "Solapur",
+    "college_type": "Private Autonomous",
+    "status": "Un-Aided, Autonomous, Religious Minority - Jain",
+    "institute_code": "06265",
+    "official_website": "https://witsolapur.org/",
+    "total_seats": 660,
+    "average_cutoff": 81.2,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Civil",
+      "Electrical"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 79.7,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 80.9,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 81.8,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "amrutvahini-sangamner",
+    "name": "Amrutvahini Sheti & Shikshan Vikas Sanstha's Amrutvahini College of Engineering",
+    "city": "Sangamner",
+    "district": "Ahmednagar",
+    "college_type": "Private Autonomous",
+    "status": "Un-Aided, Autonomous",
+    "institute_code": "05162",
+    "official_website": "https://acoe.edu.in/",
+    "total_seats": 1020,
+    "average_cutoff": 82.4,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Civil",
+      "Electrical"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 81.1,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 82.0,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 82.9,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "jdcoe-nagpur",
+    "name": "Jaidev Education Society, J D College of Engineering and Management",
+    "city": "Nagpur",
+    "district": "Nagpur",
+    "college_type": "Private Autonomous",
+    "status": "Un-Aided, Autonomous, Linguistic Minority - Hindi",
+    "institute_code": "04138",
+    "official_website": "https://jdcoem.ac.in/",
+    "total_seats": 990,
+    "average_cutoff": 79.7,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Civil",
+      "Electrical"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 78.2,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 79.1,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 80.3,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "ghrce-wagholi",
+    "name": "G.H. Raisoni College of Engineering & Management, Wagholi",
+    "city": "Pune",
+    "district": "Pune",
+    "college_type": "Private Autonomous",
+    "status": "Un-Aided, Autonomous, Linguistic Minority - Hindi",
+    "institute_code": "06155",
+    "official_website": "https://ghrce.raisoni.net/",
+    "total_seats": 1230,
+    "average_cutoff": 84.2,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Civil",
+      "Electrical"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 83.0,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 84.0,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 85.1,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "rscoe-tathawade",
+    "name": "Rajarshi Shahu College of Engineering, Tathawade",
+    "city": "Pune",
+    "district": "Pune",
+    "college_type": "Private Autonomous",
+    "status": "Un-Aided, Autonomous",
+    "institute_code": "06141",
+    "official_website": "https://www.rscoe.edu.in/",
+    "total_seats": 840,
+    "average_cutoff": 85.8,
+    "branches": [
+      "Computer Science",
+      "Information Technology",
+      "Mechanical",
+      "Civil"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 84.6,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 85.4,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 86.4,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "dbatu-lonere",
+    "name": "Dr. Babasaheb Ambedkar Technological University",
+    "city": "Lonere",
+    "district": "Raigad",
+    "college_type": "University",
+    "status": "University",
+    "institute_code": "03033",
+    "official_website": "https://dbatu.ac.in/",
+    "total_seats": 558,
+    "average_cutoff": 74.7,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Civil",
+      "Electrical",
+      "Chemical"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 73.6,
+        "trend": "stable"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 74.3,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 75.5,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "mgm-kamothe",
+    "name": "M.G.M.'s College of Engineering and Technology, Kamothe",
+    "city": "Kamothe",
+    "district": "Navi Mumbai",
+    "college_type": "Private",
+    "status": "Un-Aided",
+    "institute_code": "03175",
+    "official_website": "https://www.mgmmumbai.ac.in/",
+    "total_seats": 810,
+    "average_cutoff": 83.8,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Electronics",
+      "Civil"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 82.5,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 83.4,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 84.3,
+        "trend": "up"
+      }
+    ]
+  },
+  {
+    "id": "st-john-palghar",
+    "name": "Aldel Education Trust's St. John College of Engineering & Management",
+    "city": "Palghar",
+    "district": "Palghar",
+    "college_type": "Private Autonomous",
+    "status": "Un-Aided, Autonomous, Religious Minority - Christian",
+    "institute_code": "03218",
+    "official_website": "https://www.stjohnengg.org/",
+    "total_seats": 480,
+    "average_cutoff": 77.9,
+    "branches": [
+      "Computer Science",
+      "Mechanical",
+      "Civil",
+      "Electronics"
+    ],
+    "cutoff_history": [
+      {
+        "year": "2023-24",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 76.4,
+        "trend": "up"
+      },
+      {
+        "year": "2024-25",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 77.8,
+        "trend": "up"
+      },
+      {
+        "year": "2025-26",
+        "category": "GOPEN",
+        "branch": "Computer Science",
+        "cutoff": 78.7,
+        "trend": "up"
+      }
+    ]
+  }
+]
