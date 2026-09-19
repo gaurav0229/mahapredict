@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://mahapredict.onrender.com";
+
 const categoryOptions = [
   "GOPEN",
   "GOBSC",
@@ -131,7 +133,7 @@ export default function HomePage() {
     city: "Pune",
     domicile: "Maharashtra",
     hsc_percentage: 93.4,
-    cet_score: 168,
+    cet_percentile: 92.5,
     category: "GOPEN",
     preferred_branches: ["Computer Science", "Information Technology"],
   });
@@ -164,7 +166,7 @@ export default function HomePage() {
       city: formData.city,
       domicile: formData.domicile,
       hsc_percentage: studentType === "12th" ? Number(formData.hsc_percentage) : null,
-      cet_score: studentType === "12th" ? Number(formData.cet_score) : null,
+      cet_percentile: studentType === "12th" ? Number(formData.cet_percentile) : null,
       diploma_percentage: studentType === "diploma" ? Number(formData.hsc_percentage) : null,
       category: formData.category,
       preferred_branches: formData.preferred_branches,
@@ -172,7 +174,7 @@ export default function HomePage() {
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/predict", {
+      const response = await fetch(`${API_BASE_URL}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -400,12 +402,15 @@ export default function HomePage() {
 
                 <label className="space-y-2">
                   <span className="text-sm font-medium text-slate-700">
-                    {studentType === "12th" ? "MHT CET Score" : "Diploma Semester Average"}
+                    {studentType === "12th" ? "MHT CET Percentile" : "Diploma Semester Average"}
                   </span>
                   <input
                     type="number"
-                    name="cet_score"
-                    value={formData.cet_score}
+                    min={0}
+                    max={100}
+                    step={0.01}
+                    name="cet_percentile"
+                    value={formData.cet_percentile}
                     onChange={handleChange}
                     className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
                   />

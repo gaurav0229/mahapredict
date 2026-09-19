@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://mahapredict-backend.onrender.com";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://mahapredict.onrender.com";
 
 const categoryOptions = [
   "GOPEN",
@@ -44,9 +44,9 @@ const fallbackPrediction = {
     { id: "walchand-sangli", college_name: "Walchand College of Engineering", branch: "Mechanical", chance: "MODERATE", cutoff: 88.7 },
   ],
   colleges: [
-    { id: "coep-pune", college_name: "COEP Technological University", city: "Pune", district: "Pune", branch: "Computer Science", cutoff: 96.0, chance: "HIGH" },
-    { id: "vjti-mumbai", college_name: "VJTI Mumbai", city: "Mumbai", district: "Mumbai", branch: "Computer Science", cutoff: 94.4, chance: "HIGH" },
-    { id: "walchand-sangli", college_name: "Walchand College of Engineering", city: "Sangli", district: "Sangli", branch: "Mechanical", cutoff: 88.7, chance: "MODERATE" },
+    { id: "coep-pune", college_name: "COEP Technological University", status: "Government Autonomous", branch: "Computer Science", cutoff: 96.0, chance: "HIGH" },
+    { id: "vjti-mumbai", college_name: "VJTI Mumbai", status: "Government Autonomous", branch: "Computer Science", cutoff: 94.4, chance: "HIGH" },
+    { id: "walchand-sangli", college_name: "Walchand College of Engineering", status: "Government Aided", branch: "Mechanical", cutoff: 88.7, chance: "MODERATE" },
   ],
 };
 
@@ -58,7 +58,7 @@ export default function PredictorPage() {
     city: "Pune",
     domicile: "Maharashtra",
     hsc_percentage: 93.4,
-    cet_score: 168,
+    cet_percentile: 92.5,
     category: "GOPEN",
     preferred_branches: ["Computer Science", "Information Technology"],
   });
@@ -81,7 +81,7 @@ export default function PredictorPage() {
       city: formData.city,
       domicile: formData.domicile,
       hsc_percentage: studentType === "12th" ? Number(formData.hsc_percentage) : null,
-      cet_score: studentType === "12th" ? Number(formData.cet_score) : null,
+      cet_percentile: studentType === "12th" ? Number(formData.cet_percentile) : null,
       diploma_percentage: studentType === "diploma" ? Number(formData.hsc_percentage) : null,
       category: formData.category,
       preferred_branches: formData.preferred_branches,
@@ -195,12 +195,15 @@ export default function PredictorPage() {
 
                 <label className="space-y-2">
                   <span className="text-sm font-medium text-slate-700">
-                    {studentType === "12th" ? "MHT CET Score" : "Diploma Score"}
+                    {studentType === "12th" ? "MHT CET Percentile" : "Diploma Score"}
                   </span>
                   <input
                     type="number"
-                    name="cet_score"
-                    value={formData.cet_score}
+                    min={0}
+                    max={100}
+                    step={0.01}
+                    name="cet_percentile"
+                    value={formData.cet_percentile}
                     onChange={handleChange}
                     className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
                   />
@@ -334,7 +337,7 @@ export default function PredictorPage() {
               <thead className="bg-slate-100 text-slate-600">
                 <tr>
                   <th className="px-4 py-3 font-semibold">College</th>
-                  <th className="px-4 py-3 font-semibold">City</th>
+                  <th className="px-4 py-3 font-semibold">Status</th>
                   <th className="px-4 py-3 font-semibold">Branch</th>
                   <th className="px-4 py-3 font-semibold">Cutoff</th>
                   <th className="px-4 py-3 font-semibold">Chance</th>
@@ -344,7 +347,7 @@ export default function PredictorPage() {
                 {(result?.colleges ?? fallbackPrediction.colleges).map((college: any) => (
                   <tr key={college.id} className="border-t border-slate-200 text-slate-700">
                     <td className="px-4 py-3 font-semibold text-slate-900">{college.college_name}</td>
-                    <td className="px-4 py-3">{college.city}</td>
+                    <td className="px-4 py-3">{college.status ?? "—"}</td>
                     <td className="px-4 py-3">{college.branch}</td>
                     <td className="px-4 py-3">{college.cutoff}%</td>
                     <td className="px-4 py-3">

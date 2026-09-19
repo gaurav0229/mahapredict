@@ -33,3 +33,9 @@ pnpm-debug.log*
 build/
 dist/
 coverage/
+
+# CAP data pipeline: source PDFs and generated CSVs are large (150MB+) and
+# reproducible via backend/extract_cap_data.py + import_to_supabase.py - the
+# real runtime data store is Postgres, not these files. See README's
+# "Data pipeline" section.
+backend/supabase_import/

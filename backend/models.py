@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import BigInteger, Boolean, DateTime, Float, ForeignKey, ForeignKeyConstraint, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
@@ -9,46 +9,72 @@ from database import Base
 class College(Base):
     __tablename__ = "colleges"
 
-    id: Mapped[str] = mapped_column(String(120), primary_key=True)
+    institute_code: Mapped[str] = mapped_column(String(10), primary_key=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    city: Mapped[str] = mapped_column(String(120), nullable=False)
-    district: Mapped[str] = mapped_column(String(120), nullable=False)
-    college_type: Mapped[str] = mapped_column(String(80), nullable=False)
+    status: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    home_university: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    city: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    district: Mapped[str | None] = mapped_column(String(120), nullable=True)
     official_website: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    total_seats: Mapped[int] = mapped_column(Integer, default=0)
-    average_cutoff: Mapped[float | None] = mapped_column(Float, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    branch_records: Mapped[list["Branch"]] = relationship(back_populates="college")
-    cutoff_records: Mapped[list["CutoffHistory"]] = relationship(back_populates="college")
+    branches: Mapped[list["Branch"]] = relationship(back_populates="college")
 
 
 class Branch(Base):
     __tablename__ = "branches"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    college_id: Mapped[str] = mapped_column(ForeignKey("colleges.id"), nullable=False)
-    branch_name: Mapped[str] = mapped_column(String(150), nullable=False)
-    intake: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    placement_signal: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    institute_code: Mapped[str] = mapped_column(ForeignKey("colleges.institute_code"), primary_key=True)
+    choice_code: Mapped[str] = mapped_column(String(12), primary_key=True)
+    course_name: Mapped[str] = mapped_column(String(200), nullable=False)
 
-    college: Mapped[College] = relationship(back_populates="branch_records")
+    college: Mapped[College] = relationship(back_populates="branches")
+    cutoff_records: Mapped[list["CutoffHistory"]] = relationship(back_populates="branch")
+    seat_records: Mapped[list["SeatMatrix"]] = relationship(back_populates="branch")
 
 
 class CutoffHistory(Base):
     __tablename__ = "cutoff_history"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    college_id: Mapped[str] = mapped_column(ForeignKey("colleges.id"), nullable=False)
-    branch_name: Mapped[str] = mapped_column(String(150), nullable=False)
-    category: Mapped[str] = mapped_column(String(30), nullable=False)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    institute_code: Mapped[str] = mapped_column(String(10), nullable=False)
+    choice_code: Mapped[str] = mapped_column(String(12), nullable=False)
     year: Mapped[int] = mapped_column(Integer, nullable=False)
-    cutoff_percent: Mapped[float] = mapped_column(Float, nullable=False)
-    closing_rank: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    trend_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    round: Mapped[str] = mapped_column(String(20), nullable=False)  # CAP1 / CAP2 / CAP3 / CAP4
+    quota: Mapped[str] = mapped_column(String(20), nullable=False)  # MH / AI / DIPLOMA
+    level: Mapped[str] = mapped_column(String(120), nullable=False)  # e.g. "State Level", "All India"
+    stage: Mapped[str] = mapped_column(String(30), nullable=False)  # I / II / "I-Non Defence" / ...
+    category: Mapped[str] = mapped_column(String(30), nullable=False)  # e.g. GOPENS, LOBCH, EWS, TFWS, AI
+    merit_rank: Mapped[int] = mapped_column(Integer, nullable=False)
+    percentile: Mapped[float] = mapped_column(Float, nullable=False)
+    source_pdf: Mapped[str | None] = mapped_column(String(120), nullable=True)
 
-    college: Mapped[College] = relationship(back_populates="cutoff_records")
+    __table_args__ = (
+        ForeignKeyConstraint(["institute_code", "choice_code"], ["branches.institute_code", "branches.choice_code"]),
+    )
+
+    branch: Mapped[Branch] = relationship(back_populates="cutoff_records")
+
+
+class SeatMatrix(Base):
+    __tablename__ = "seat_matrix"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    institute_code: Mapped[str] = mapped_column(String(10), nullable=False)
+    choice_code: Mapped[str] = mapped_column(String(12), nullable=False)
+    year: Mapped[int] = mapped_column(Integer, nullable=False)
+    level: Mapped[str] = mapped_column(String(30), nullable=False)  # State Level / PWD / DEF / Reservation
+    category: Mapped[str] = mapped_column(String(30), nullable=False)  # OPEN / SC / ST / ... / EWS / TFWS
+    gender: Mapped[str] = mapped_column(String(10), nullable=False)  # G / L / TOTAL / "G + L"
+    seats: Mapped[int] = mapped_column(Integer, nullable=False)
+    source_pdf: Mapped[str | None] = mapped_column(String(120), nullable=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(["institute_code", "choice_code"], ["branches.institute_code", "branches.choice_code"]),
+    )
+
+    branch: Mapped[Branch] = relationship(back_populates="seat_records")
 
 
 class User(Base):

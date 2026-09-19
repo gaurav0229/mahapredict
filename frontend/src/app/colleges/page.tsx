@@ -3,41 +3,31 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://mahapredict.onrender.com";
+
 const fallbackColleges = [
   {
     id: "coep-pune",
     name: "COEP Technological University",
-    city: "Pune",
-    district: "Pune",
-    type: "Government",
+    status: "Government Autonomous",
+    home_university: "Autonomous Institute",
     website: "https://www.coeptech.ac.in/",
-    seats: 1200,
-    average_cutoff: 95.4,
-    latest_cutoff: 96.8,
     branches: ["Computer Science", "Information Technology", "Electronics"],
   },
   {
     id: "vjti-mumbai",
     name: "VJTI Mumbai",
-    city: "Mumbai",
-    district: "Mumbai",
-    type: "Government",
+    status: "Government Autonomous",
+    home_university: "Autonomous Institute",
     website: "https://www.vjti.ac.in/",
-    seats: 1080,
-    average_cutoff: 93.5,
-    latest_cutoff: 94.9,
     branches: ["Computer Science", "Electronics", "Mechanical"],
   },
   {
     id: "spit-mumbai",
     name: "Sardar Patel Institute of Technology",
-    city: "Mumbai",
-    district: "Mumbai",
-    type: "Private Autonomous",
+    status: "Un-Aided Autonomous",
+    home_university: "Mumbai University",
     website: "https://www.spit.ac.in/",
-    seats: 720,
-    average_cutoff: 91.8,
-    latest_cutoff: 92.6,
     branches: ["Information Technology", "Computer Science"],
   },
 ];
@@ -48,7 +38,7 @@ export default function CollegesPage() {
   useEffect(() => {
     const loadColleges = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/colleges?limit=20");
+        const response = await fetch(`${API_BASE_URL}/colleges?limit=20`);
         if (!response.ok) return;
         const data = await response.json();
         if (Array.isArray(data.items) && data.items.length > 0) {
@@ -79,20 +69,20 @@ export default function CollegesPage() {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-xl font-bold text-white">{college.name}</p>
-                  <p className="mt-2 text-sm text-slate-200">{college.city} • {college.type}</p>
+                  <p className="mt-2 text-sm text-slate-200">{college.status}</p>
                 </div>
-                <span className="rounded-full bg-emerald-500/20 px-2 py-1 text-xs font-bold text-emerald-200">High</span>
               </div>
 
               <div className="mt-6 space-y-3 text-sm text-slate-200">
-                <div className="flex justify-between"><span>Top branch</span><strong className="text-white">{college.branches?.[0] ?? "Computer Science"}</strong></div>
-                <div className="flex justify-between"><span>Cutoff</span><strong className="text-white">{(college.latest_cutoff ?? college.average_cutoff ?? 0).toFixed(1)}%</strong></div>
-                <div className="flex justify-between"><span>Seats</span><strong className="text-white">{college.seats ?? 0}</strong></div>
-                <div className="flex justify-between"><span>Trend</span><strong className="text-white">{college.average_cutoff >= 90 ? "Up trending" : "Stable"}</strong></div>
+                <div className="flex justify-between"><span>Home university</span><strong className="text-white">{college.home_university ?? "—"}</strong></div>
+                <div className="flex justify-between"><span>Top branch</span><strong className="text-white">{college.branches?.[0] ?? "—"}</strong></div>
+                <div className="flex justify-between"><span>Branches offered</span><strong className="text-white">{college.branches?.length ?? 0}</strong></div>
               </div>
 
               <div className="mt-6 flex gap-3">
-                <a href={college.website} target="_blank" rel="noreferrer" className="flex-1 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-white/10">Website</a>
+                {college.website && (
+                  <a href={college.website} target="_blank" rel="noreferrer" className="flex-1 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-white/10">Website</a>
+                )}
                 <Link href={`/colleges/${college.id}`} className="flex-1 rounded-xl bg-emerald-500 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-emerald-600">View details</Link>
               </div>
             </div>

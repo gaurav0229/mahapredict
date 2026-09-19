@@ -2,7 +2,7 @@ services:
   - type: web
     name: mahapredict-backend
     runtime: python
-    repo: https://github.com/your-org/Admission-Predictor-Portal
+    repo: https://github.com/gaurav0229/mahapredict
     branch: main
     rootDir: backend
     buildCommand: pip install -r requirements.txt
