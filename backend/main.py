@@ -195,18 +195,24 @@ def dashboard_summary(db: Session = Depends(get_db)) -> dict:
 def get_colleges(
     branch: str | None = None,
     limit: int = 20,
+    offset: int = 0,
     db: Session = Depends(get_db),
 ):
-    query = select(College).order_by(College.name).limit(limit)
+    limit = max(1, min(limit, 200))
+    offset = max(0, offset)
+
+    base_query = select(College)
+    count_query = select(func.count(func.distinct(College.institute_code)))
     if branch:
-        query = (
-            select(College)
-            .join(Branch, Branch.institute_code == College.institute_code)
-            .where(Branch.course_name.ilike(f"%{branch}%"))
-            .distinct()
-            .order_by(College.name)
-            .limit(limit)
+        base_query = base_query.join(Branch, Branch.institute_code == College.institute_code).where(
+            Branch.course_name.ilike(f"%{branch}%")
         )
+        count_query = count_query.select_from(College).join(
+            Branch, Branch.institute_code == College.institute_code
+        ).where(Branch.course_name.ilike(f"%{branch}%"))
+
+    total = db.execute(count_query).scalar() or 0
+    query = base_query.distinct().order_by(College.name).limit(limit).offset(offset)
 
     colleges = db.execute(query).scalars().unique().all()
     results = [
@@ -220,7 +226,7 @@ def get_colleges(
         }
         for college in colleges
     ]
-    return {"count": len(results), "items": results}
+    return {"count": len(results), "total": total, "limit": limit, "offset": offset, "items": results}
 
 
 @app.get("/colleges/{institute_code}")
