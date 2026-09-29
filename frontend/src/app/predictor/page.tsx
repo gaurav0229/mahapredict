@@ -52,6 +52,7 @@ const fallbackPrediction = {
 
 export default function PredictorPage() {
   const [studentType, setStudentType] = useState<"12th" | "diploma">("12th");
+  const [quota, setQuota] = useState<"MH" | "AI">("MH");
   const [formData, setFormData] = useState({
     full_name: "Rahul Patil",
     email: "rahul@example.com",
@@ -59,6 +60,7 @@ export default function PredictorPage() {
     domicile: "Maharashtra",
     hsc_percentage: 93.4,
     cet_percentile: 92.5,
+    jee_percentile: "",
     category: "GOPEN",
     preferred_branches: ["Computer Science", "Information Technology"],
   });
@@ -81,9 +83,11 @@ export default function PredictorPage() {
       city: formData.city,
       domicile: formData.domicile,
       hsc_percentage: studentType === "12th" ? Number(formData.hsc_percentage) : null,
-      cet_percentile: studentType === "12th" ? Number(formData.cet_percentile) : null,
+      cet_percentile: studentType === "12th" && formData.cet_percentile ? Number(formData.cet_percentile) : null,
+      jee_percentile: studentType === "12th" && quota === "AI" && formData.jee_percentile ? Number(formData.jee_percentile) : null,
       diploma_percentage: studentType === "diploma" ? Number(formData.hsc_percentage) : null,
       category: formData.category,
+      quota: studentType === "12th" ? quota : "MH",
       preferred_branches: formData.preferred_branches,
       preferred_districts: ["Pune", "Mumbai"],
     };
@@ -209,19 +213,55 @@ export default function PredictorPage() {
                   />
                 </label>
 
-                <label className="space-y-2 md:col-span-2">
+                <label className="space-y-2">
                   <span className="text-sm font-medium text-slate-700">Category</span>
                   <select
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
+                    disabled={studentType === "12th" && quota === "AI"}
+                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500 disabled:bg-slate-100 disabled:text-slate-400"
                   >
                     {categoryOptions.map((category) => (
                       <option key={category} value={category}>{category}</option>
                     ))}
                   </select>
                 </label>
+
+                {studentType === "12th" && (
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-700">Quota</span>
+                    <select
+                      value={quota}
+                      onChange={(e) => setQuota(e.target.value as "MH" | "AI")}
+                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
+                    >
+                      <option value="MH">Maharashtra State (category-based)</option>
+                      <option value="AI">All India (merit-based, JEE or CET)</option>
+                    </select>
+                  </label>
+                )}
+
+                {studentType === "12th" && quota === "AI" && (
+                  <label className="space-y-2 md:col-span-2">
+                    <span className="text-sm font-medium text-slate-700">JEE (Main) Percentile</span>
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      step={0.01}
+                      name="jee_percentile"
+                      placeholder="Optional if you filled MHT CET Percentile above"
+                      value={formData.jee_percentile}
+                      onChange={handleChange}
+                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
+                    />
+                    <span className="block text-xs text-slate-500">
+                      All-India quota seats are filled by JEE or MHT-CET merit depending on the seat - fill in
+                      whichever percentile you have (or both).
+                    </span>
+                  </label>
+                )}
 
                 <label className="space-y-2 md:col-span-2">
                   <span className="text-sm font-medium text-slate-700">Preferred Branches</span>
@@ -271,12 +311,14 @@ export default function PredictorPage() {
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-2xl bg-white/5 p-4">
-                  <p className="text-sm text-slate-300">Score used</p>
+                  <p className="text-sm text-slate-300">{result?.score_label ?? "Score used"}</p>
                   <p className="mt-2 text-3xl font-black text-white">{result?.score_used ?? "--"}</p>
                 </div>
                 <div className="rounded-2xl bg-white/5 p-4">
-                  <p className="text-sm text-slate-300">Category</p>
-                  <p className="mt-2 text-2xl font-bold text-white">{result?.category ?? formData.category}</p>
+                  <p className="text-sm text-slate-300">{result?.quota === "AI" ? "Quota / Exam" : "Category"}</p>
+                  <p className="mt-2 text-2xl font-bold text-white">
+                    {result?.quota === "AI" ? `All India (${result?.merit_exam})` : (result?.category ?? formData.category)}
+                  </p>
                 </div>
                 <div className="rounded-2xl bg-white/5 p-4">
                   <p className="text-sm text-slate-300">High chance</p>

@@ -101,13 +101,20 @@ class StudentProfile(BaseModel):
     # MHT-CET *percentile* (0-100), not the raw 200-mark score - cutoff_history stores
     # percentiles, so that's what a student's input needs to be comparable against.
     cet_percentile: float | None = Field(default=None, ge=0, le=100)
-    jee_score: float | None = Field(default=None, ge=0, le=400)
+    # JEE(Main) NTA *percentile score* (0-100), not raw marks - the AI-quota cutoff PDFs
+    # report JEE-based rows on this same percentile scale (see cutoff_history.merit_exam).
+    jee_percentile: float | None = Field(default=None, ge=0, le=100)
     # Approximation: the official DIPLOMA-quota merit list is itself percentile-ranked
     # (see cutoff_history where quota='DIPLOMA'), not the same axis as a diploma
     # marksheet percentage. We don't have a marks->percentile converter for diploma
     # holders, so this value is used directly as a percentile proxy for comparison.
     diploma_percentage: float | None = Field(default=None, ge=40, le=100)
     category: str = Field(..., pattern=r"^(GOPEN|GOBSC|GOSC|GOST|LOPEN|LOBSC|LOSC|LOST|EWS|TFWS)$")
+    # MH: regular Maharashtra state quota (default, category-based). AI: All-India quota
+    # seats, merit-based on whichever of jee_percentile/cet_percentile is provided -
+    # category is not applied (AI-quota seats aren't split by caste/gender the way MH
+    # quota is, beyond a small reserved-category subset not yet exposed here).
+    quota: Literal["MH", "AI"] = "MH"
     preferred_branches: list[str] = Field(default_factory=lambda: ["Computer Science", "Information Technology", "Electronics"])
     preferred_districts: list[str] = Field(default_factory=lambda: ["Pune", "Mumbai", "Nagpur"])
 
@@ -267,24 +274,33 @@ def get_college(institute_code: str, db: Session = Depends(get_db)):
 
 @app.post("/predict")
 def predict_colleges(payload: StudentProfile, db: Session = Depends(get_db)):
-    if payload.student_type == "12th":
-        score = payload.cet_percentile or payload.hsc_percentage or 0
-    else:
-        score = payload.diploma_percentage or 0
-
-    if score <= 0:
-        raise HTTPException(status_code=400, detail="Please provide a valid CET percentile or academic score.")
-
     latest_year = _latest_data_year(db)
 
+    # Figure out which quota/category/merit-exam slice of cutoff_history to compare
+    # against, and which of the student's scores is the right one for that slice's
+    # percentile scale. AI-quota rows are split by merit_exam (JEE vs MHT-CET vs NEET) -
+    # mixing those would silently compare a score against the wrong exam's percentile
+    # pool, so the quota+exam combination determines both the query filter and the score.
     if payload.student_type == "diploma":
-        quota = "DIPLOMA"
-        category_filter = None
+        db_quota, category_filter, merit_exam_filter = "DIPLOMA", None, "DIPLOMA"
+        score, score_label = payload.diploma_percentage or 0, "Diploma percentile"
+    elif payload.quota == "AI":
+        db_quota, category_filter = "AI", "AI"
+        if payload.jee_percentile:
+            merit_exam_filter, score, score_label = "JEE", payload.jee_percentile, "JEE percentile"
+        elif payload.cet_percentile:
+            merit_exam_filter, score, score_label = "MHT-CET", payload.cet_percentile, "CET percentile"
+        else:
+            merit_exam_filter, score, score_label = None, 0, "JEE or CET percentile"
     else:
-        quota = "MH"
+        db_quota, merit_exam_filter = "MH", "MHT-CET"
         category_filter = CATEGORY_MAP.get(payload.category)
         if not category_filter:
             raise HTTPException(status_code=400, detail="Unsupported category.")
+        score, score_label = payload.cet_percentile or payload.hsc_percentage or 0, "CET percentile"
+
+    if score <= 0:
+        raise HTTPException(status_code=400, detail=f"Please provide a valid {score_label}.")
 
     query = (
         select(
@@ -305,10 +321,12 @@ def predict_colleges(payload: StudentProfile, db: Session = Depends(get_db)):
             CutoffHistory,
             (CutoffHistory.institute_code == Branch.institute_code) & (CutoffHistory.choice_code == Branch.choice_code),
         )
-        .where(CutoffHistory.quota == quota)
+        .where(CutoffHistory.quota == db_quota)
     )
-    if quota == "MH":
+    if db_quota == "MH":
         query = query.where(CutoffHistory.category == category_filter, CutoffHistory.level == "State Level")
+    elif db_quota == "AI":
+        query = query.where(CutoffHistory.category == category_filter, CutoffHistory.merit_exam == merit_exam_filter)
     else:
         query = query.where(CutoffHistory.level == "Diploma")
 
@@ -325,8 +343,9 @@ def predict_colleges(payload: StudentProfile, db: Session = Depends(get_db)):
         grouped.setdefault((row.institute_code, row.choice_code), []).append(row)
 
     # Batch-fetch seat counts for every matched branch in one query instead of N+1.
+    # Only meaningful for MH quota - seat_matrix doesn't break seats out by AI-quota category.
     seats_by_branch: dict[tuple[str, str], int] = {}
-    if payload.student_type != "diploma" and payload.category in SEAT_CATEGORY_MAP and grouped:
+    if db_quota == "MH" and payload.category in SEAT_CATEGORY_MAP and grouped:
         seat_cat, seat_gender, seat_level = SEAT_CATEGORY_MAP[payload.category]
         keys = list(grouped.keys())
         seat_rows = db.execute(
@@ -365,7 +384,9 @@ def predict_colleges(payload: StudentProfile, db: Session = Depends(get_db)):
                 "home_university": latest.home_university,
                 "website": latest.official_website,
                 "branch": latest.course_name,
-                "category": payload.category,
+                "category": payload.category if db_quota == "MH" else category_filter,
+                "quota": db_quota,
+                "merit_exam": merit_exam_filter,
                 "cutoff": round(latest.percentile, 2),
                 "cutoff_year": latest.year,
                 "cutoff_round": latest.round,
@@ -402,7 +423,10 @@ def predict_colleges(payload: StudentProfile, db: Session = Depends(get_db)):
         "student_name": payload.full_name,
         "student_type": payload.student_type,
         "category": payload.category,
+        "quota": db_quota,
+        "merit_exam": merit_exam_filter,
         "score_used": round(score, 2),
+        "score_label": score_label,
         "data_year": latest_year,
         "summary": summary,
         "colleges": matches[:10],

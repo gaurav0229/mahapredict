@@ -46,6 +46,7 @@ class CutoffHistory(Base):
     level: Mapped[str] = mapped_column(String(120), nullable=False)  # e.g. "State Level", "All India"
     stage: Mapped[str] = mapped_column(String(30), nullable=False)  # I / II / "I-Non Defence" / ...
     category: Mapped[str] = mapped_column(String(30), nullable=False)  # e.g. GOPENS, LOBCH, EWS, TFWS, AI
+    merit_exam: Mapped[str] = mapped_column(String(20), nullable=False)  # MHT-CET / JEE / NEET / DIPLOMA
     merit_rank: Mapped[int] = mapped_column(Integer, nullable=False)
     percentile: Mapped[float] = mapped_column(Float, nullable=False)
     source_pdf: Mapped[str | None] = mapped_column(String(120), nullable=True)
