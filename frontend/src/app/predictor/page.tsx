@@ -68,8 +68,6 @@ export default function PredictorPage() {
   const [formData, setFormData] = useState({
     full_name: "Rahul Patil",
     email: "rahul@example.com",
-    city: "Pune",
-    domicile: "Maharashtra",
     hsc_percentage: 93.4,
     cet_percentile: 92.5,
     jee_percentile: "",
@@ -134,6 +132,27 @@ export default function PredictorPage() {
     setPreferredColleges((prev) => prev.filter((c) => c.id !== id));
   };
 
+  const exportShortlistCsv = () => {
+    const rows: any[] = result?.colleges ?? fallbackPrediction.colleges;
+    if (!rows.length) return;
+    const header = ["College", "Status", "Branch", "Cutoff %", "Chance"];
+    const csvLines = [
+      header.join(","),
+      ...rows.map((c) =>
+        [c.college_name, c.status ?? "", c.branch, c.cutoff, c.chance]
+          .map((value) => `"${String(value ?? "").replace(/"/g, '""')}"`)
+          .join(",")
+      ),
+    ];
+    const blob = new Blob([csvLines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "mahapredict-shortlist.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -147,8 +166,6 @@ export default function PredictorPage() {
       full_name: formData.full_name,
       email: formData.email,
       student_type: studentType,
-      city: formData.city,
-      domicile: formData.domicile,
       hsc_percentage: studentType === "12th" ? Number(formData.hsc_percentage) : null,
       cet_percentile: studentType === "12th" && formData.cet_percentile ? Number(formData.cet_percentile) : null,
       jee_percentile: studentType === "12th" && quota === "AI" && formData.jee_percentile ? Number(formData.jee_percentile) : null,
@@ -195,280 +212,270 @@ export default function PredictorPage() {
               Enter your profile, choose preferred branches, and compare your chances against historical CAP cutoff trends.
             </p>
 
-            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-              <div className="grid gap-5 md:grid-cols-2">
-                <label className="space-y-2 md:col-span-2">
-                  <span className="text-sm font-medium text-slate-700">Full Name</span>
-                  <input
-                    name="full_name"
-                    value={formData.full_name}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
-                  />
-                </label>
+            <form onSubmit={handleSubmit} className="mt-8 space-y-8">
+              <fieldset className="space-y-5">
+                <legend className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">1. Your details</legend>
+                <div className="grid gap-5 md:grid-cols-2">
+                  <label className="space-y-2 md:col-span-2">
+                    <span className="text-sm font-medium text-slate-700">Full Name</span>
+                    <input
+                      name="full_name"
+                      value={formData.full_name}
+                      onChange={handleChange}
+                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
+                    />
+                  </label>
 
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">Email</span>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
-                  />
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">Student Type</span>
-                  <select
-                    value={studentType}
-                    onChange={(e) => setStudentType(e.target.value as "12th" | "diploma")}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
-                  >
-                    <option value="12th">12th Pass</option>
-                    <option value="diploma">Diploma</option>
-                  </select>
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">City / District</span>
-                  <input
-                    name="city"
-                    value={formData.city}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
-                  />
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">Domicile</span>
-                  <select
-                    name="domicile"
-                    value={formData.domicile}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
-                  >
-                    <option value="Maharashtra">Maharashtra</option>
-                    <option value="Non-Maharashtra">Non-Maharashtra</option>
-                  </select>
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">
-                    {studentType === "12th" ? "HSC Percentage" : "Diploma Aggregate"}
-                  </span>
-                  <input
-                    type="number"
-                    name="hsc_percentage"
-                    value={formData.hsc_percentage}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
-                  />
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">
-                    {studentType === "12th" ? "MHT CET Percentile" : "Diploma Score"}
-                  </span>
-                  <input
-                    type="number"
-                    min={0}
-                    max={100}
-                    step={0.01}
-                    name="cet_percentile"
-                    value={formData.cet_percentile}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
-                  />
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">Category</span>
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    disabled={studentType === "12th" && quota === "AI"}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500 disabled:bg-slate-100 disabled:text-slate-400"
-                  >
-                    {categoryOptions.map((category) => (
-                      <option key={category.value} value={category.value}>{category.label}</option>
-                    ))}
-                  </select>
-                </label>
-
-                {studentType === "12th" && (
                   <label className="space-y-2">
-                    <span className="text-sm font-medium text-slate-700">Quota</span>
+                    <span className="text-sm font-medium text-slate-700">Email</span>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
+                    />
+                  </label>
+
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-700">Student Type</span>
                     <select
-                      value={quota}
-                      onChange={(e) => setQuota(e.target.value as "MH" | "AI")}
+                      value={studentType}
+                      onChange={(e) => setStudentType(e.target.value as "12th" | "diploma")}
                       className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
                     >
-                      <option value="MH">Maharashtra State (category-based)</option>
-                      <option value="AI">All India (merit-based, JEE or CET)</option>
+                      <option value="12th">12th Pass</option>
+                      <option value="diploma">Diploma</option>
                     </select>
                   </label>
-                )}
+                </div>
+              </fieldset>
 
-                {studentType === "12th" && quota === "AI" && (
-                  <label className="space-y-2 md:col-span-2">
-                    <span className="text-sm font-medium text-slate-700">JEE (Main) Percentile</span>
+              <fieldset className="space-y-5">
+                <legend className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">2. Scores &amp; category</legend>
+                <div className="grid gap-5 md:grid-cols-2">
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-700">
+                      {studentType === "12th" ? "HSC Percentage" : "Diploma Aggregate"}
+                    </span>
+                    <input
+                      type="number"
+                      name="hsc_percentage"
+                      value={formData.hsc_percentage}
+                      onChange={handleChange}
+                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
+                    />
+                  </label>
+
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-700">
+                      {studentType === "12th" ? "MHT CET Percentile" : "Diploma Score"}
+                    </span>
                     <input
                       type="number"
                       min={0}
                       max={100}
                       step={0.01}
-                      name="jee_percentile"
-                      placeholder="Optional if you filled MHT CET Percentile above"
-                      value={formData.jee_percentile}
+                      name="cet_percentile"
+                      value={formData.cet_percentile}
                       onChange={handleChange}
                       className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
                     />
-                    <span className="block text-xs text-slate-500">
-                      All-India quota seats are filled by JEE or MHT-CET merit depending on the seat - fill in
-                      whichever percentile you have (or both).
-                    </span>
                   </label>
-                )}
 
-                {studentType === "12th" && quota === "MH" && (
-                  <label className="space-y-2 md:col-span-2">
-                    <span className="text-sm font-medium text-slate-700">Home University (where you passed 12th)</span>
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-700">Category</span>
                     <select
-                      value={homeUniversity}
-                      onChange={(e) => setHomeUniversity(e.target.value)}
-                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
+                      name="category"
+                      value={formData.category}
+                      onChange={handleChange}
+                      disabled={studentType === "12th" && quota === "AI"}
+                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500 disabled:bg-slate-100 disabled:text-slate-400"
                     >
-                      <option value="">Not sure / skip (State Level comparison only)</option>
-                      {universities.map((u) => (
-                        <option key={u.name} value={u.name}>{u.name}</option>
+                      {categoryOptions.map((category) => (
+                        <option key={category.value} value={category.value}>{category.label}</option>
                       ))}
                     </select>
+                  </label>
+
+                  {studentType === "12th" && (
+                    <label className="space-y-2">
+                      <span className="text-sm font-medium text-slate-700">Quota</span>
+                      <select
+                        value={quota}
+                        onChange={(e) => setQuota(e.target.value as "MH" | "AI")}
+                        className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
+                      >
+                        <option value="MH">Maharashtra State (category-based)</option>
+                        <option value="AI">All India (merit-based, JEE or CET)</option>
+                      </select>
+                    </label>
+                  )}
+
+                  {studentType === "12th" && quota === "AI" && (
+                    <label className="space-y-2 md:col-span-2">
+                      <span className="text-sm font-medium text-slate-700">JEE (Main) Percentile</span>
+                      <input
+                        type="number"
+                        min={0}
+                        max={100}
+                        step={0.01}
+                        name="jee_percentile"
+                        placeholder="Optional if you filled MHT CET Percentile above"
+                        value={formData.jee_percentile}
+                        onChange={handleChange}
+                        className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
+                      />
+                      <span className="block text-xs text-slate-500">
+                        All-India quota seats are filled by JEE or MHT-CET merit depending on the seat - fill in
+                        whichever percentile you have (or both).
+                      </span>
+                    </label>
+                  )}
+
+                  {studentType === "12th" && quota === "MH" && (
+                    <label className="space-y-2 md:col-span-2">
+                      <span className="text-sm font-medium text-slate-700">Home University (where you passed 12th)</span>
+                      <select
+                        value={homeUniversity}
+                        onChange={(e) => setHomeUniversity(e.target.value)}
+                        className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
+                      >
+                        <option value="">Not sure / skip (State Level comparison only)</option>
+                        {universities.map((u) => (
+                          <option key={u.name} value={u.name}>{u.name}</option>
+                        ))}
+                      </select>
+                      <span className="block text-xs text-slate-500">
+                        Colleges reserve seats for candidates from their own university region, often at an easier
+                        cutoff than the open State Level list - telling us yours lets us check both.
+                      </span>
+                    </label>
+                  )}
+                </div>
+              </fieldset>
+
+              <fieldset className="space-y-5">
+                <legend className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">3. Preferences (optional)</legend>
+                <div className="grid gap-5">
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-700">Preferred Branches</span>
+                    <div className="flex flex-wrap gap-2">
+                      {branchOptions.map((branch) => {
+                        const selected = formData.preferred_branches.includes(branch);
+                        return (
+                          <button
+                            key={branch}
+                            type="button"
+                            onClick={() => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                preferred_branches: selected
+                                  ? prev.preferred_branches.filter((item) => item !== branch)
+                                  : [...prev.preferred_branches, branch],
+                              }));
+                            }}
+                            className={`rounded-full border px-3 py-1.5 text-sm font-medium ${
+                              selected
+                                ? "border-emerald-500 bg-emerald-100 text-emerald-700"
+                                : "border-slate-300 bg-slate-50 text-slate-700"
+                            }`}
+                          >
+                            {branch}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </label>
+
+                  <label className="relative space-y-2">
+                    <span className="text-sm font-medium text-slate-700">Specific Colleges</span>
+                    <input
+                      type="text"
+                      value={collegeSearch}
+                      onChange={(e) => setCollegeSearch(e.target.value)}
+                      placeholder="Search by college name, e.g. COEP, VJTI, Pune..."
+                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
+                    />
+                    {collegeSearch.trim().length >= 3 && (
+                      <div className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg">
+                        {collegeSearchLoading ? (
+                          <p className="px-3 py-2.5 text-sm text-slate-500">Searching…</p>
+                        ) : collegeResults.length > 0 ? (
+                          collegeResults.map((college) => (
+                            <button
+                              key={college.id}
+                              type="button"
+                              onClick={() => addPreferredCollege(college)}
+                              className="block w-full border-b border-slate-100 px-3 py-2.5 text-left text-sm last:border-0 hover:bg-emerald-50"
+                            >
+                              <span className="font-medium text-slate-900">{college.name}</span>
+                              {college.status && <span className="block text-xs text-slate-500">{college.status}</span>}
+                            </button>
+                          ))
+                        ) : (
+                          <p className="px-3 py-2.5 text-sm text-slate-500">No colleges found.</p>
+                        )}
+                      </div>
+                    )}
+                    {preferredColleges.length > 0 && (
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        {preferredColleges.map((college) => (
+                          <span
+                            key={college.id}
+                            className="inline-flex items-center gap-2 rounded-full border border-emerald-500 bg-emerald-100 px-3 py-1.5 text-sm font-medium text-emerald-700"
+                          >
+                            {college.name}
+                            <button
+                              type="button"
+                              onClick={() => removePreferredCollege(college.id)}
+                              className="text-emerald-700 hover:text-emerald-900"
+                              aria-label={`Remove ${college.name}`}
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     <span className="block text-xs text-slate-500">
-                      Colleges reserve seats for candidates from their own university region, often at an easier
-                      cutoff than the open State Level list - telling us yours lets us check both.
+                      Leave empty to check all colleges. If you add colleges here, results are limited to just these
+                      (still narrowed by Preferred Branches above).
                     </span>
                   </label>
-                )}
 
-                <label className="space-y-2 md:col-span-2">
-                  <span className="text-sm font-medium text-slate-700">Preferred Branches</span>
-                  <div className="flex flex-wrap gap-2">
-                    {branchOptions.map((branch) => {
-                      const selected = formData.preferred_branches.includes(branch);
-                      return (
-                        <button
-                          key={branch}
-                          type="button"
-                          onClick={() => {
-                            setFormData((prev) => ({
-                              ...prev,
-                              preferred_branches: selected
-                                ? prev.preferred_branches.filter((item) => item !== branch)
-                                : [...prev.preferred_branches, branch],
-                            }));
-                          }}
-                          className={`rounded-full border px-3 py-1.5 text-sm font-medium ${
-                            selected
-                              ? "border-emerald-500 bg-emerald-100 text-emerald-700"
-                              : "border-slate-300 bg-slate-50 text-slate-700"
-                          }`}
-                        >
-                          {branch}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </label>
-
-                <label className="relative space-y-2 md:col-span-2">
-                  <span className="text-sm font-medium text-slate-700">Specific Colleges (optional)</span>
-                  <input
-                    type="text"
-                    value={collegeSearch}
-                    onChange={(e) => setCollegeSearch(e.target.value)}
-                    placeholder="Search by college name, e.g. COEP, VJTI, Pune..."
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
-                  />
-                  {collegeSearch.trim().length >= 3 && (
-                    <div className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg">
-                      {collegeSearchLoading ? (
-                        <p className="px-3 py-2.5 text-sm text-slate-500">Searching…</p>
-                      ) : collegeResults.length > 0 ? (
-                        collegeResults.map((college) => (
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-700">Preferred Districts</span>
+                    <div className="flex flex-wrap gap-2">
+                      {districts.slice(0, 12).map((d) => {
+                        const selected = preferredDistricts.includes(d.name);
+                        return (
                           <button
-                            key={college.id}
+                            key={d.name}
                             type="button"
-                            onClick={() => addPreferredCollege(college)}
-                            className="block w-full border-b border-slate-100 px-3 py-2.5 text-left text-sm last:border-0 hover:bg-emerald-50"
+                            onClick={() => {
+                              setPreferredDistricts((prev) =>
+                                selected ? prev.filter((item) => item !== d.name) : [...prev, d.name]
+                              );
+                            }}
+                            className={`rounded-full border px-3 py-1.5 text-sm font-medium ${
+                              selected
+                                ? "border-emerald-500 bg-emerald-100 text-emerald-700"
+                                : "border-slate-300 bg-slate-50 text-slate-700"
+                            }`}
                           >
-                            <span className="font-medium text-slate-900">{college.name}</span>
-                            {college.status && <span className="block text-xs text-slate-500">{college.status}</span>}
+                            {d.name}
                           </button>
-                        ))
-                      ) : (
-                        <p className="px-3 py-2.5 text-sm text-slate-500">No colleges found.</p>
-                      )}
+                        );
+                      })}
                     </div>
-                  )}
-                  {preferredColleges.length > 0 && (
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      {preferredColleges.map((college) => (
-                        <span
-                          key={college.id}
-                          className="inline-flex items-center gap-2 rounded-full border border-emerald-500 bg-emerald-100 px-3 py-1.5 text-sm font-medium text-emerald-700"
-                        >
-                          {college.name}
-                          <button
-                            type="button"
-                            onClick={() => removePreferredCollege(college.id)}
-                            className="text-emerald-700 hover:text-emerald-900"
-                            aria-label={`Remove ${college.name}`}
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  <span className="block text-xs text-slate-500">
-                    Leave empty to check all colleges. If you add colleges here, results are limited to just these
-                    (still narrowed by Preferred Branches above).
-                  </span>
-                </label>
-
-                <label className="space-y-2 md:col-span-2">
-                  <span className="text-sm font-medium text-slate-700">Preferred Districts (optional)</span>
-                  <div className="flex flex-wrap gap-2">
-                    {districts.slice(0, 12).map((d) => {
-                      const selected = preferredDistricts.includes(d.name);
-                      return (
-                        <button
-                          key={d.name}
-                          type="button"
-                          onClick={() => {
-                            setPreferredDistricts((prev) =>
-                              selected ? prev.filter((item) => item !== d.name) : [...prev, d.name]
-                            );
-                          }}
-                          className={`rounded-full border px-3 py-1.5 text-sm font-medium ${
-                            selected
-                              ? "border-emerald-500 bg-emerald-100 text-emerald-700"
-                              : "border-slate-300 bg-slate-50 text-slate-700"
-                          }`}
-                        >
-                          {d.name}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <span className="block text-xs text-slate-500">
-                    Doesn't hide other colleges - just ranks colleges in your preferred districts higher within each
-                    chance tier. District is best-effort (parsed from college names, not all colleges have one yet).
-                  </span>
-                </label>
-              </div>
+                    <span className="block text-xs text-slate-500">
+                      Doesn't hide other colleges - just ranks colleges in your preferred districts higher within each
+                      chance tier. District is best-effort (parsed from college names, not all colleges have one yet).
+                    </span>
+                  </label>
+                </div>
+              </fieldset>
 
               <button
                 type="submit"
@@ -545,12 +552,16 @@ export default function PredictorPage() {
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">Results</p>
               <h2 className="mt-2 text-3xl font-bold text-slate-900">Best college matches</h2>
             </div>
-            <button className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">
-              Export shortlist
+            <button
+              type="button"
+              onClick={exportShortlistCsv}
+              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700"
+            >
+              Export shortlist (CSV)
             </button>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-slate-200">
+          <div className="overflow-x-auto rounded-2xl border border-slate-200">
             <table className="min-w-full text-left text-sm">
               <thead className="bg-slate-100 text-slate-600">
                 <tr>

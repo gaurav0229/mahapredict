@@ -1,77 +1,5 @@
 "use client";
 
-import { useMemo, useState } from "react";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://mahapredict.onrender.com";
-
-const categoryOptions = [
-  { value: "GOPEN", label: "GOPEN — General, Open" },
-  { value: "GOBSC", label: "GOBSC — General, OBC" },
-  { value: "GOSC", label: "GOSC — General, SC" },
-  { value: "GOST", label: "GOST — General, ST" },
-  { value: "GVJ", label: "GVJ — General, VJ/DT" },
-  { value: "GNT1", label: "GNT1 — General, NT-B" },
-  { value: "GNT2", label: "GNT2 — General, NT-C" },
-  { value: "GNT3", label: "GNT3 — General, NT-D" },
-  { value: "GSEBC", label: "GSEBC — General, SEBC" },
-  { value: "LOPEN", label: "LOPEN — Ladies, Open" },
-  { value: "LOBSC", label: "LOBSC — Ladies, OBC" },
-  { value: "LOSC", label: "LOSC — Ladies, SC" },
-  { value: "LOST", label: "LOST — Ladies, ST" },
-  { value: "LVJ", label: "LVJ — Ladies, VJ/DT" },
-  { value: "LNT1", label: "LNT1 — Ladies, NT-B" },
-  { value: "LNT2", label: "LNT2 — Ladies, NT-C" },
-  { value: "LNT3", label: "LNT3 — Ladies, NT-D" },
-  { value: "LSEBC", label: "LSEBC — Ladies, SEBC" },
-  { value: "EWS", label: "EWS — Economically Weaker Section" },
-  { value: "TFWS", label: "TFWS — Tuition Fee Waiver Scheme" },
-];
-
-const branchOptions = [
-  "Computer Science",
-  "Information Technology",
-  "Electronics",
-  "Mechanical",
-  "Civil",
-  "Electrical",
-  "AI & Data Science",
-];
-
-const demoResults = [
-  {
-    college_name: "COEP Technological University",
-    city: "Pune",
-    branch: "Computer Science",
-    category: "GOPEN",
-    cutoff: 96.0,
-    chance: "HIGH",
-  },
-  {
-    college_name: "VJTI Mumbai",
-    city: "Mumbai",
-    branch: "Computer Science",
-    category: "GOPEN",
-    cutoff: 94.2,
-    chance: "HIGH",
-  },
-  {
-    college_name: "Walchand College of Engineering",
-    city: "Sangli",
-    branch: "Mechanical",
-    category: "GOPEN",
-    cutoff: 88.6,
-    chance: "MODERATE",
-  },
-  {
-    college_name: "Government College of Engineering, Nagpur",
-    city: "Nagpur",
-    branch: "Electrical",
-    category: "GOBSC",
-    cutoff: 78.7,
-    chance: "LOW",
-  },
-];
-
 const howItWorks = [
   {
     step: "STEP 01",
@@ -136,73 +64,6 @@ const topColleges = [
 ];
 
 export default function HomePage() {
-  const [studentType, setStudentType] = useState<"12th" | "diploma">("12th");
-  const [formData, setFormData] = useState({
-    full_name: "Rahul Patil",
-    email: "rahul@example.com",
-    city: "Pune",
-    domicile: "Maharashtra",
-    hsc_percentage: 93.4,
-    cet_percentile: 92.5,
-    category: "GOPEN",
-    preferred_branches: ["Computer Science", "Information Technology"],
-  });
-
-  const stats = useMemo(
-    () => ({
-      total: 45,
-      high: 12,
-      moderate: 18,
-      low: 15,
-      notEligible: 0,
-    }),
-    []
-  );
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const payload = {
-      full_name: formData.full_name,
-      email: formData.email,
-      student_type: studentType,
-      city: formData.city,
-      domicile: formData.domicile,
-      hsc_percentage: studentType === "12th" ? Number(formData.hsc_percentage) : null,
-      cet_percentile: studentType === "12th" ? Number(formData.cet_percentile) : null,
-      diploma_percentage: studentType === "diploma" ? Number(formData.hsc_percentage) : null,
-      category: formData.category,
-      preferred_branches: formData.preferred_branches,
-      preferred_districts: ["Pune", "Mumbai"],
-    };
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/predict`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error("Prediction request failed");
-      }
-
-      const data = await response.json();
-      console.log("Prediction response:", data);
-      alert(`Prediction complete: ${data.summary?.total_colleges ?? 0} matching colleges found.`);
-    } catch (error) {
-      console.error(error);
-      alert("Backend is not running yet. Start the FastAPI server to test predictions.");
-    }
-  };
-
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.12),_transparent_25%),linear-gradient(180deg,#f8fafc_0%,#edfdf5_30%,#f8fafc_100%)] text-slate-900">
       <section className="relative overflow-hidden">
@@ -223,7 +84,7 @@ export default function HomePage() {
 
             <div className="mt-8 flex flex-wrap gap-4">
               <a
-                href="#predictor"
+                href="/predictor"
                 className="rounded-full bg-emerald-500 px-6 py-3 font-semibold text-white shadow-lg shadow-emerald-200 transition hover:bg-emerald-600"
               >
                 Start Prediction
@@ -332,243 +193,19 @@ export default function HomePage() {
       </section>
 
       <section id="predictor" className="bg-white py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="mb-8 text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">Prediction form</p>
-            <h2 className="mt-3 text-3xl font-bold">Check your admission chances</h2>
-          </div>
-
-          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-            <form onSubmit={handleSubmit} className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
-              <div className="grid gap-5 md:grid-cols-2">
-                <label className="space-y-2 md:col-span-2">
-                  <span className="text-sm font-medium text-slate-700">Full Name</span>
-                  <input
-                    name="full_name"
-                    value={formData.full_name}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none ring-0 transition focus:border-emerald-500"
-                  />
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">Email</span>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
-                  />
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">Student Type</span>
-                  <select
-                    value={studentType}
-                    onChange={(e) => setStudentType(e.target.value as "12th" | "diploma")}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
-                  >
-                    <option value="12th">12th Pass (HSC + MHT CET)</option>
-                    <option value="diploma">Diploma Pass</option>
-                  </select>
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">City / District</span>
-                  <input
-                    name="city"
-                    value={formData.city}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
-                  />
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">Domicile</span>
-                  <select
-                    name="domicile"
-                    value={formData.domicile}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
-                  >
-                    <option value="Maharashtra">Maharashtra</option>
-                    <option value="Non-Maharashtra">Non-Maharashtra</option>
-                  </select>
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">
-                    {studentType === "12th" ? "HSC Percentage" : "Diploma Aggregate"}
-                  </span>
-                  <input
-                    type="number"
-                    name="hsc_percentage"
-                    value={formData.hsc_percentage}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
-                  />
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">
-                    {studentType === "12th" ? "MHT CET Percentile" : "Diploma Semester Average"}
-                  </span>
-                  <input
-                    type="number"
-                    min={0}
-                    max={100}
-                    step={0.01}
-                    name="cet_percentile"
-                    value={formData.cet_percentile}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
-                  />
-                </label>
-
-                <label className="space-y-2 md:col-span-2">
-                  <span className="text-sm font-medium text-slate-700">Category</span>
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
-                  >
-                    {categoryOptions.map((category) => (
-                      <option key={category.value} value={category.value}>
-                        {category.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="space-y-2 md:col-span-2">
-                  <span className="text-sm font-medium text-slate-700">Preferred Branches</span>
-                  <div className="flex flex-wrap gap-2">
-                    {branchOptions.map((branch) => {
-                      const selected = formData.preferred_branches.includes(branch);
-                      return (
-                        <button
-                          type="button"
-                          key={branch}
-                          className={`rounded-full border px-3 py-1.5 text-sm font-medium ${
-                            selected
-                              ? "border-emerald-500 bg-emerald-100 text-emerald-700"
-                              : "border-slate-300 bg-white text-slate-700"
-                          }`}
-                          onClick={() => {
-                            setFormData((prev) => {
-                              const exists = prev.preferred_branches.includes(branch);
-                              return {
-                                ...prev,
-                                preferred_branches: exists
-                                  ? prev.preferred_branches.filter((item) => item !== branch)
-                                  : [...prev.preferred_branches, branch],
-                              };
-                            });
-                          }}
-                        >
-                          {branch}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </label>
-              </div>
-
-              <button
-                type="submit"
-                className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-emerald-500 px-5 py-3 font-semibold text-white transition hover:bg-emerald-600"
-              >
-                Predict Colleges
-              </button>
-            </form>
-
-            <aside className="space-y-5">
-              <div className="rounded-3xl bg-slate-900 p-6 text-white shadow-xl">
-                <p className="text-sm uppercase tracking-[0.2em] text-emerald-300">Your metrics</p>
-                <div className="mt-6 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span>Total eligible</span>
-                    <span className="font-bold">{stats.total}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>High chance</span>
-                    <span className="font-bold text-emerald-400">{stats.high}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Moderate</span>
-                    <span className="font-bold text-amber-400">{stats.moderate}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Low</span>
-                    <span className="font-bold text-red-400">{stats.low}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Recommendation engine</p>
-                <ul className="mt-5 space-y-4 text-sm text-slate-700">
-                  <li className="rounded-2xl bg-emerald-50 p-3 text-emerald-700">Colleges you must apply to</li>
-                  <li className="rounded-2xl bg-amber-50 p-3 text-amber-700">Target colleges</li>
-                  <li className="rounded-2xl bg-red-50 p-3 text-red-700">Backup options</li>
-                  <li className="rounded-2xl bg-slate-100 p-3 text-slate-700">Dream institutes</li>
-                </ul>
-              </div>
-            </aside>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-6 py-20">
-        <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Results overview</p>
-              <h3 className="mt-2 text-2xl font-bold text-slate-900">College match suggestions</h3>
-            </div>
-            <button className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">
-              Export PDF
-            </button>
-          </div>
-
-          <div className="overflow-hidden rounded-2xl border border-slate-200">
-            <table className="min-w-full text-left">
-              <thead className="bg-slate-100 text-sm text-slate-600">
-                <tr>
-                  <th className="px-4 py-3">College</th>
-                  <th className="px-4 py-3">City</th>
-                  <th className="px-4 py-3">Branch</th>
-                  <th className="px-4 py-3">Cutoff</th>
-                  <th className="px-4 py-3">Chance</th>
-                </tr>
-              </thead>
-              <tbody>
-                {demoResults.map((college) => (
-                  <tr key={college.college_name} className="border-t border-slate-200 text-sm text-slate-700">
-                    <td className="px-4 py-3 font-medium text-slate-900">{college.college_name}</td>
-                    <td className="px-4 py-3">{college.city}</td>
-                    <td className="px-4 py-3">{college.branch}</td>
-                    <td className="px-4 py-3">{college.cutoff}%</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`rounded-full px-2 py-1 text-xs font-semibold ${
-                          college.chance === "HIGH"
-                            ? "bg-emerald-100 text-emerald-700"
-                            : college.chance === "MODERATE"
-                              ? "bg-amber-100 text-amber-700"
-                              : "bg-red-100 text-red-700"
-                        }`}
-                      >
-                        {college.chance}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <div className="mx-auto max-w-5xl px-4 text-center sm:px-6">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">Prediction tool</p>
+          <h2 className="mt-3 text-3xl font-bold text-slate-900">Check your admission chances</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
+            Enter your percentile, category, quota, and preferences in the full predictor to see real colleges
+            ranked by chance — high, moderate, or low — based on actual CAP cutoff history.
+          </p>
+          <a
+            href="/predictor"
+            className="mt-8 inline-flex items-center justify-center rounded-full bg-emerald-500 px-8 py-3.5 font-semibold text-white shadow-lg shadow-emerald-200 transition hover:bg-emerald-600"
+          >
+            Open the Predictor →
+          </a>
         </div>
       </section>
 
@@ -601,7 +238,7 @@ export default function HomePage() {
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-100">Ready to find your college?</p>
               <h3 className="mt-3 text-3xl font-black">Enter your percentile and get instant predictions.</h3>
             </div>
-            <a href="#predictor" className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-semibold text-emerald-700 transition hover:bg-emerald-50">
+            <a href="/predictor" className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-semibold text-emerald-700 transition hover:bg-emerald-50">
               Start Prediction →
             </a>
           </div>

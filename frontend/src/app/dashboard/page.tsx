@@ -81,6 +81,26 @@ export default function DashboardPage() {
     loadDashboard();
   }, []);
 
+  const exportCsv = () => {
+    if (!colleges.length) return;
+    const header = ["College", "Branch", "Cutoff %", "Chance"];
+    const csvLines = [
+      header.join(","),
+      ...colleges.map((c) =>
+        [c.college_name, c.branch, c.cutoff, c.chance]
+          .map((value) => `"${String(value ?? "").replace(/"/g, '""')}"`)
+          .join(",")
+      ),
+    ];
+    const blob = new Blob([csvLines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "mahapredict-recommendations.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const statCards = [
     { label: "Total Colleges", value: stats.total_colleges },
     { label: "Top Colleges (85%+)", value: stats.top_colleges },
@@ -109,7 +129,13 @@ export default function DashboardPage() {
           <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-xl font-bold">Recommended colleges</h2>
-              <button className="rounded-full border border-slate-300 px-3 py-1.5 text-sm font-medium">Export PDF</button>
+              <button
+                type="button"
+                onClick={exportCsv}
+                className="rounded-full border border-slate-300 px-3 py-1.5 text-sm font-medium transition hover:border-emerald-400 hover:text-emerald-700"
+              >
+                Export CSV
+              </button>
             </div>
 
             {loading ? (
