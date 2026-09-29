@@ -68,6 +68,10 @@ export default function PredictorPage() {
   });
   const [result, setResult] = useState<any>(fallbackPrediction);
   const [loading, setLoading] = useState(false);
+  const [preferredColleges, setPreferredColleges] = useState<{ id: string; name: string; status: string | null }[]>([]);
+  const [collegeSearch, setCollegeSearch] = useState("");
+  const [collegeResults, setCollegeResults] = useState<{ id: string; name: string; status: string | null }[]>([]);
+  const [collegeSearchLoading, setCollegeSearchLoading] = useState(false);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/universities`)
@@ -77,6 +81,39 @@ export default function PredictorPage() {
       })
       .catch((error) => console.warn("Universities API unavailable.", error));
   }, []);
+
+  useEffect(() => {
+    const query = collegeSearch.trim();
+    if (query.length < 3) {
+      setCollegeResults([]);
+      return;
+    }
+    setCollegeSearchLoading(true);
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      fetch(`${API_BASE_URL}/colleges?name=${encodeURIComponent(query)}&limit=8`, { signal: controller.signal })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => setCollegeResults(data?.items ?? []))
+        .catch((error) => {
+          if ((error as Error).name !== "AbortError") console.warn("College search unavailable.", error);
+        })
+        .finally(() => setCollegeSearchLoading(false));
+    }, 300);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [collegeSearch]);
+
+  const addPreferredCollege = (college: { id: string; name: string; status: string | null }) => {
+    setPreferredColleges((prev) => (prev.some((c) => c.id === college.id) ? prev : [...prev, college]));
+    setCollegeSearch("");
+    setCollegeResults([]);
+  };
+
+  const removePreferredCollege = (id: string) => {
+    setPreferredColleges((prev) => prev.filter((c) => c.id !== id));
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -101,6 +138,7 @@ export default function PredictorPage() {
       quota: studentType === "12th" ? quota : "MH",
       home_university: quota === "MH" && homeUniversity ? homeUniversity : null,
       preferred_branches: formData.preferred_branches,
+      preferred_colleges: preferredColleges.map((c) => c.id),
       preferred_districts: ["Pune", "Mumbai"],
     };
 
@@ -323,6 +361,62 @@ export default function PredictorPage() {
                       );
                     })}
                   </div>
+                </label>
+
+                <label className="relative space-y-2 md:col-span-2">
+                  <span className="text-sm font-medium text-slate-700">Specific Colleges (optional)</span>
+                  <input
+                    type="text"
+                    value={collegeSearch}
+                    onChange={(e) => setCollegeSearch(e.target.value)}
+                    placeholder="Search by college name, e.g. COEP, VJTI, Pune..."
+                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
+                  />
+                  {collegeSearch.trim().length >= 3 && (
+                    <div className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg">
+                      {collegeSearchLoading ? (
+                        <p className="px-3 py-2.5 text-sm text-slate-500">Searching…</p>
+                      ) : collegeResults.length > 0 ? (
+                        collegeResults.map((college) => (
+                          <button
+                            key={college.id}
+                            type="button"
+                            onClick={() => addPreferredCollege(college)}
+                            className="block w-full border-b border-slate-100 px-3 py-2.5 text-left text-sm last:border-0 hover:bg-emerald-50"
+                          >
+                            <span className="font-medium text-slate-900">{college.name}</span>
+                            {college.status && <span className="block text-xs text-slate-500">{college.status}</span>}
+                          </button>
+                        ))
+                      ) : (
+                        <p className="px-3 py-2.5 text-sm text-slate-500">No colleges found.</p>
+                      )}
+                    </div>
+                  )}
+                  {preferredColleges.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {preferredColleges.map((college) => (
+                        <span
+                          key={college.id}
+                          className="inline-flex items-center gap-2 rounded-full border border-emerald-500 bg-emerald-100 px-3 py-1.5 text-sm font-medium text-emerald-700"
+                        >
+                          {college.name}
+                          <button
+                            type="button"
+                            onClick={() => removePreferredCollege(college.id)}
+                            className="text-emerald-700 hover:text-emerald-900"
+                            aria-label={`Remove ${college.name}`}
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <span className="block text-xs text-slate-500">
+                    Leave empty to check all colleges. If you add colleges here, results are limited to just these
+                    (still narrowed by Preferred Branches above).
+                  </span>
                 </label>
               </div>
 

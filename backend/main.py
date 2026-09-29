@@ -147,6 +147,10 @@ class StudentProfile(BaseModel):
     # fall back to State-Level-only comparison as before.
     home_university: str | None = Field(default=None, max_length=255)
     preferred_branches: list[str] = Field(default_factory=lambda: ["Computer Science", "Information Technology", "Electronics"])
+    # Specific colleges (institute_code) the student wants checked, e.g. a shortlist they
+    # already have in mind - when given, results are restricted to just these colleges
+    # (still narrowed further by preferred_branches if that's also non-empty).
+    preferred_colleges: list[str] = Field(default_factory=list)
     preferred_districts: list[str] = Field(default_factory=lambda: ["Pune", "Mumbai", "Nagpur"])
 
     @field_validator("full_name")
@@ -248,6 +252,7 @@ def dashboard_summary(db: Session = Depends(get_db)) -> dict:
 @app.get("/colleges")
 def get_colleges(
     branch: str | None = None,
+    name: str | None = None,
     limit: int = 20,
     offset: int = 0,
     db: Session = Depends(get_db),
@@ -264,6 +269,9 @@ def get_colleges(
         count_query = count_query.select_from(College).join(
             Branch, Branch.institute_code == College.institute_code
         ).where(Branch.course_name.ilike(f"%{branch}%"))
+    if name:
+        base_query = base_query.where(College.name.ilike(f"%{name}%"))
+        count_query = count_query.where(College.name.ilike(f"%{name}%"))
 
     total = db.execute(count_query).scalar() or 0
     query = base_query.distinct().order_by(College.name).limit(limit).offset(offset)
@@ -380,6 +388,10 @@ def predict_colleges(payload: StudentProfile, db: Session = Depends(get_db)):
     branch_patterns = [f"%{b.strip()}%" for b in payload.preferred_branches if b.strip()]
     if branch_patterns:
         query = query.where(or_(*[Branch.course_name.ilike(p) for p in branch_patterns]))
+
+    preferred_college_codes = [c.strip() for c in payload.preferred_colleges if c.strip()]
+    if preferred_college_codes:
+        query = query.where(Branch.institute_code.in_(preferred_college_codes))
 
     query = query.order_by(Branch.institute_code, Branch.choice_code, CutoffHistory.year.desc(), CutoffHistory.round.desc())
 
