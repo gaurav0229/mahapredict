@@ -38,45 +38,52 @@ CATEGORY_OPTIONS = [
     "GOBSC",
     "GOSC",
     "GOST",
+    "GVJ",
+    "GNT1",
+    "GNT2",
+    "GNT3",
+    "GSEBC",
     "LOPEN",
     "LOBSC",
     "LOSC",
     "LOST",
+    "LVJ",
+    "LNT1",
+    "LNT2",
+    "LNT3",
+    "LSEBC",
     "EWS",
     "TFWS",
 ]
 
-# The frontend's simplified category list maps to the real MHT-CET CAP category
-# codes used in cutoff_history (State Level, MH quota). The real data also has
-# VJ/NT1/NT2/NT3/SEBC/PWD/DEF variants and Home-University-specific levels that
-# aren't exposed as options yet - extending CATEGORY_OPTIONS/CATEGORY_MAP together
-# is how to add them later.
+# The frontend's category list maps to the real MHT-CET CAP category codes used in
+# cutoff_history (State Level, MH quota). NT1/NT2/NT3 correspond to seat_matrix's
+# NTB/NTC/NTD (confirmed by column position in the official PDFs - both list
+# OPEN/SC/ST/VJ/NT-B/NT-C/NT-D/OBC/SEBC in that same order). PWD and DEF (disability/
+# defence reservation) are a separate dimension layered across any of these castes
+# (e.g. PWDOBCS) rather than another caste option, and aren't exposed as a selector yet.
 CATEGORY_MAP: dict[str, str] = {
-    "GOPEN": "GOPENS",
-    "GOBSC": "GOBCS",
-    "GOSC": "GSCS",
-    "GOST": "GSTS",
-    "LOPEN": "LOPENS",
-    "LOBSC": "LOBCS",
-    "LOSC": "LSCS",
-    "LOST": "LSTS",
-    "EWS": "EWS",
-    "TFWS": "TFWS",
+    "GOPEN": "GOPENS", "GOBSC": "GOBCS", "GOSC": "GSCS", "GOST": "GSTS",
+    "GVJ": "GVJS", "GNT1": "GNT1S", "GNT2": "GNT2S", "GNT3": "GNT3S", "GSEBC": "GSEBCS",
+    "LOPEN": "LOPENS", "LOBSC": "LOBCS", "LOSC": "LSCS", "LOST": "LSTS",
+    "LVJ": "LVJS", "LNT1": "LNT1S", "LNT2": "LNT2S", "LNT3": "LNT3S", "LSEBC": "LSEBCS",
+    "EWS": "EWS", "TFWS": "TFWS",
 }
 
 # Same mapping but into seat_matrix's (category, gender, level) shape, which uses
-# a different, coarser vocabulary (OPEN/OBC/SC/ST + G/L) than cutoff_history's
-# combined codes (GOPENS/LOBCS/...). EWS and TFWS are recorded as single "Reservation"
-# totals rather than split by gender.
+# a different, coarser vocabulary (OPEN/SC/ST/VJ/DT/NTB/NTC/NTD/OBC/SEBC + G/L) than
+# cutoff_history's combined codes (GOPENS/LOBCS/...). EWS and TFWS are recorded as
+# single "Reservation" totals rather than split by gender.
 SEAT_CATEGORY_MAP: dict[str, tuple[str, str, str]] = {
-    "GOPEN": ("OPEN", "G", "State Level"),
-    "LOPEN": ("OPEN", "L", "State Level"),
-    "GOBSC": ("OBC", "G", "State Level"),
-    "LOBSC": ("OBC", "L", "State Level"),
-    "GOSC": ("SC", "G", "State Level"),
-    "LOSC": ("SC", "L", "State Level"),
-    "GOST": ("ST", "G", "State Level"),
-    "LOST": ("ST", "L", "State Level"),
+    "GOPEN": ("OPEN", "G", "State Level"), "LOPEN": ("OPEN", "L", "State Level"),
+    "GOBSC": ("OBC", "G", "State Level"), "LOBSC": ("OBC", "L", "State Level"),
+    "GOSC": ("SC", "G", "State Level"), "LOSC": ("SC", "L", "State Level"),
+    "GOST": ("ST", "G", "State Level"), "LOST": ("ST", "L", "State Level"),
+    "GVJ": ("VJ/DT", "G", "State Level"), "LVJ": ("VJ/DT", "L", "State Level"),
+    "GNT1": ("NTB", "G", "State Level"), "LNT1": ("NTB", "L", "State Level"),
+    "GNT2": ("NTC", "G", "State Level"), "LNT2": ("NTC", "L", "State Level"),
+    "GNT3": ("NTD", "G", "State Level"), "LNT3": ("NTD", "L", "State Level"),
+    "GSEBC": ("SEBC", "G", "State Level"), "LSEBC": ("SEBC", "L", "State Level"),
     "EWS": ("EWS", "TOTAL", "Reservation"),
     "TFWS": ("TFWS", "TOTAL", "Reservation"),
 }
@@ -85,11 +92,15 @@ SEAT_CATEGORY_MAP: dict[str, tuple[str, str, str]] = {
 # levels below (EWS/TFWS have no H/O split in the data - State Level only).
 CATEGORY_MAP_HOME: dict[str, str] = {
     "GOPEN": "GOPENH", "GOBSC": "GOBCH", "GOSC": "GSCH", "GOST": "GSTH",
+    "GVJ": "GVJH", "GNT1": "GNT1H", "GNT2": "GNT2H", "GNT3": "GNT3H", "GSEBC": "GSEBCH",
     "LOPEN": "LOPENH", "LOBSC": "LOBCH", "LOSC": "LSCH", "LOST": "LSTH",
+    "LVJ": "LVJH", "LNT1": "LNT1H", "LNT2": "LNT2H", "LNT3": "LNT3H", "LSEBC": "LSEBCH",
 }
 CATEGORY_MAP_OTHER: dict[str, str] = {
     "GOPEN": "GOPENO", "GOBSC": "GOBCO", "GOSC": "GSCO", "GOST": "GSTO",
+    "GVJ": "GVJO", "GNT1": "GNT1O", "GNT2": "GNT2O", "GNT3": "GNT3O", "GSEBC": "GSEBCO",
     "LOPEN": "LOPENO", "LOBSC": "LOBCO", "LOSC": "LSCO", "LOST": "LSTO",
+    "LVJ": "LVJO", "LNT1": "LNT1O", "LNT2": "LNT2O", "LNT3": "LNT3O", "LSEBC": "LSEBCO",
 }
 
 # A college's seats aren't just "State Level" - Maharashtra CAP also reserves seats by
@@ -135,7 +146,10 @@ class StudentProfile(BaseModel):
     # marksheet percentage. We don't have a marks->percentile converter for diploma
     # holders, so this value is used directly as a percentile proxy for comparison.
     diploma_percentage: float | None = Field(default=None, ge=40, le=100)
-    category: str = Field(..., pattern=r"^(GOPEN|GOBSC|GOSC|GOST|LOPEN|LOBSC|LOSC|LOST|EWS|TFWS)$")
+    category: str = Field(
+        ...,
+        pattern=r"^(GOPEN|GOBSC|GOSC|GOST|GVJ|GNT1|GNT2|GNT3|GSEBC|LOPEN|LOBSC|LOSC|LOST|LVJ|LNT1|LNT2|LNT3|LSEBC|EWS|TFWS)$",
+    )
     # MH: regular Maharashtra state quota (default, category-based). AI: All-India quota
     # seats, merit-based on whichever of jee_percentile/cet_percentile is provided -
     # category is not applied (AI-quota seats aren't split by caste/gender the way MH

@@ -5,16 +5,26 @@ import { useMemo, useState } from "react";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://mahapredict.onrender.com";
 
 const categoryOptions = [
-  "GOPEN",
-  "GOBSC",
-  "GOSC",
-  "GOST",
-  "LOPEN",
-  "LOBSC",
-  "LOSC",
-  "LOST",
-  "EWS",
-  "TFWS",
+  { value: "GOPEN", label: "GOPEN — General, Open" },
+  { value: "GOBSC", label: "GOBSC — General, OBC" },
+  { value: "GOSC", label: "GOSC — General, SC" },
+  { value: "GOST", label: "GOST — General, ST" },
+  { value: "GVJ", label: "GVJ — General, VJ/DT" },
+  { value: "GNT1", label: "GNT1 — General, NT-B" },
+  { value: "GNT2", label: "GNT2 — General, NT-C" },
+  { value: "GNT3", label: "GNT3 — General, NT-D" },
+  { value: "GSEBC", label: "GSEBC — General, SEBC" },
+  { value: "LOPEN", label: "LOPEN — Ladies, Open" },
+  { value: "LOBSC", label: "LOBSC — Ladies, OBC" },
+  { value: "LOSC", label: "LOSC — Ladies, SC" },
+  { value: "LOST", label: "LOST — Ladies, ST" },
+  { value: "LVJ", label: "LVJ — Ladies, VJ/DT" },
+  { value: "LNT1", label: "LNT1 — Ladies, NT-B" },
+  { value: "LNT2", label: "LNT2 — Ladies, NT-C" },
+  { value: "LNT3", label: "LNT3 — Ladies, NT-D" },
+  { value: "LSEBC", label: "LSEBC — Ladies, SEBC" },
+  { value: "EWS", label: "EWS — Economically Weaker Section" },
+  { value: "TFWS", label: "TFWS — Tuition Fee Waiver Scheme" },
 ];
 
 const branchOptions = [
@@ -425,8 +435,8 @@ export default function HomePage() {
                     className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
                   >
                     {categoryOptions.map((category) => (
-                      <option key={category} value={category}>
-                        {category}
+                      <option key={category.value} value={category.value}>
+                        {category.label}
                       </option>
                     ))}
                   </select>
