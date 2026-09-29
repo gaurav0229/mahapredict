@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://mahapredict.onrender.com";
 
@@ -53,6 +53,8 @@ const fallbackPrediction = {
 export default function PredictorPage() {
   const [studentType, setStudentType] = useState<"12th" | "diploma">("12th");
   const [quota, setQuota] = useState<"MH" | "AI">("MH");
+  const [homeUniversity, setHomeUniversity] = useState("");
+  const [universities, setUniversities] = useState<{ name: string; college_count: number }[]>([]);
   const [formData, setFormData] = useState({
     full_name: "Rahul Patil",
     email: "rahul@example.com",
@@ -66,6 +68,15 @@ export default function PredictorPage() {
   });
   const [result, setResult] = useState<any>(fallbackPrediction);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/universities`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.items?.length) setUniversities(data.items);
+      })
+      .catch((error) => console.warn("Universities API unavailable.", error));
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -88,6 +99,7 @@ export default function PredictorPage() {
       diploma_percentage: studentType === "diploma" ? Number(formData.hsc_percentage) : null,
       category: formData.category,
       quota: studentType === "12th" ? quota : "MH",
+      home_university: quota === "MH" && homeUniversity ? homeUniversity : null,
       preferred_branches: formData.preferred_branches,
       preferred_districts: ["Pune", "Mumbai"],
     };
@@ -263,6 +275,26 @@ export default function PredictorPage() {
                   </label>
                 )}
 
+                {studentType === "12th" && quota === "MH" && (
+                  <label className="space-y-2 md:col-span-2">
+                    <span className="text-sm font-medium text-slate-700">Home University (where you passed 12th)</span>
+                    <select
+                      value={homeUniversity}
+                      onChange={(e) => setHomeUniversity(e.target.value)}
+                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-emerald-500"
+                    >
+                      <option value="">Not sure / skip (State Level comparison only)</option>
+                      {universities.map((u) => (
+                        <option key={u.name} value={u.name}>{u.name}</option>
+                      ))}
+                    </select>
+                    <span className="block text-xs text-slate-500">
+                      Colleges reserve seats for candidates from their own university region, often at an easier
+                      cutoff than the open State Level list - telling us yours lets us check both.
+                    </span>
+                  </label>
+                )}
+
                 <label className="space-y-2 md:col-span-2">
                   <span className="text-sm font-medium text-slate-700">Preferred Branches</span>
                   <div className="flex flex-wrap gap-2">
@@ -391,7 +423,14 @@ export default function PredictorPage() {
                     <td className="px-4 py-3 font-semibold text-slate-900">{college.college_name}</td>
                     <td className="px-4 py-3">{college.status ?? "—"}</td>
                     <td className="px-4 py-3">{college.branch}</td>
-                    <td className="px-4 py-3">{college.cutoff}%</td>
+                    <td className="px-4 py-3">
+                      {college.cutoff}%
+                      {college.cutoff_level && college.cutoff_level !== "State Level" && (
+                        <span className="ml-2 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-blue-700">
+                          {college.cutoff_level.startsWith("Home") ? "Home Univ" : "Other Univ"}
+                        </span>
+                      )}
+                    </td>
                     <td className="px-4 py-3">
                       <span
                         className={`rounded-full px-2 py-1 text-xs font-bold ${

@@ -81,6 +81,32 @@ SEAT_CATEGORY_MAP: dict[str, tuple[str, str, str]] = {
     "TFWS": ("TFWS", "TOTAL", "Reservation"),
 }
 
+# Same category, but the H/O-suffixed variants used by the four Home-University-aware
+# levels below (EWS/TFWS have no H/O split in the data - State Level only).
+CATEGORY_MAP_HOME: dict[str, str] = {
+    "GOPEN": "GOPENH", "GOBSC": "GOBCH", "GOSC": "GSCH", "GOST": "GSTH",
+    "LOPEN": "LOPENH", "LOBSC": "LOBCH", "LOSC": "LSCH", "LOST": "LSTH",
+}
+CATEGORY_MAP_OTHER: dict[str, str] = {
+    "GOPEN": "GOPENO", "GOBSC": "GOBCO", "GOSC": "GSCO", "GOST": "GSTO",
+    "LOPEN": "LOPENO", "LOBSC": "LOBCO", "LOSC": "LSCO", "LOST": "LSTO",
+}
+
+# A college's seats aren't just "State Level" - Maharashtra CAP also reserves seats by
+# which university the COLLEGE belongs to ("home" seats) vs not ("other" seats), and
+# separately by which university the CANDIDATE is from. That's a 2x2 matrix, and for a
+# candidate whose home university matches the college's, the "home seats for home
+# candidates" cutoff is usually meaningfully easier than State Level - a predictor that
+# only ever checks State Level understates their real chances. category suffix (H/O)
+# tracks which SEAT pool; the level string additionally tracks which CANDIDATE pool.
+LEVEL_HOME_TO_HOME = "Home University Seats Allotted to Home University Candidates"
+LEVEL_HOME_TO_OTHER = "Home University Seats Allotted to Other Than Home University Candidates"
+LEVEL_OTHER_TO_HOME = "Other Than Home University Seats Allotted to Home University Candidates"
+LEVEL_OTHER_TO_OTHER = "Other Than Home University Seats Allotted to Other Than Home University Candidates"
+# Colleges with no real home-university affiliation (autonomous institutes, deemed
+# universities) only ever publish a State Level table - the H/O split doesn't apply.
+NON_AFFILIATED_HOME_UNIVERSITY_VALUES = {None, "", "Autonomous Institute", "Deemed to be University"}
+
 CHANCE_RANK = {"HIGH": 0, "MODERATE": 1, "LOW": 2, "NOT_ELIGIBLE": 3}
 
 request_log: dict[str, list[float]] = defaultdict(list)
@@ -115,6 +141,11 @@ class StudentProfile(BaseModel):
     # category is not applied (AI-quota seats aren't split by caste/gender the way MH
     # quota is, beyond a small reserved-category subset not yet exposed here).
     quota: Literal["MH", "AI"] = "MH"
+    # Which university the student's qualifying school/college (12th or diploma) is
+    # affiliated with - determines Home-University-seat eligibility (see
+    # CATEGORY_MAP_HOME / LEVEL_HOME_TO_HOME etc.). Optional - if omitted, predictions
+    # fall back to State-Level-only comparison as before.
+    home_university: str | None = Field(default=None, max_length=255)
     preferred_branches: list[str] = Field(default_factory=lambda: ["Computer Science", "Information Technology", "Electronics"])
     preferred_districts: list[str] = Field(default_factory=lambda: ["Pune", "Mumbai", "Nagpur"])
 
@@ -165,6 +196,22 @@ def classify_score(score: float, cutoff: float) -> str:
 @app.get("/health")
 def health_check() -> dict:
     return {"status": "ok", "message": "Admission predictor backend is running"}
+
+
+@app.get("/universities")
+def get_universities(db: Session = Depends(get_db)) -> dict:
+    """Real Maharashtra university names, for the predictor's Home University selector -
+    excludes autonomous/deemed institutes, which have no home-university seat split."""
+    # SQL's NOT IN treats a NULL in the list as "unknown" for every row, matching nothing -
+    # exclude None from the set explicitly rather than relying on NOT IN to do it.
+    excluded = [v for v in NON_AFFILIATED_HOME_UNIVERSITY_VALUES if v is not None]
+    rows = db.execute(
+        select(College.home_university, func.count())
+        .where(College.home_university.is_not(None), ~College.home_university.in_(excluded))
+        .group_by(College.home_university)
+        .order_by(College.home_university)
+    ).all()
+    return {"items": [{"name": name, "college_count": count} for name, count in rows]}
 
 
 @app.get("/dashboard")
@@ -361,10 +408,79 @@ def predict_colleges(payload: StudentProfile, db: Session = Depends(get_db)):
         ).all()
         seats_by_branch = {(r[0], r[1]): r[2] for r in seat_rows}
 
+    # Home-University-aware comparison: a college's seats aren't just State Level - see
+    # the module-level comment on LEVEL_HOME_TO_HOME for why. Batch-fetch the relevant
+    # H/O-category rows for every matched branch in one query, then per-branch pick
+    # whichever of {State Level, Home/Other-University level} gives the BEST (lowest)
+    # cutoff for this student - that's their real best chance, not just the conservative
+    # State-Level-only number.
+    home_uni_best: dict[tuple[str, str], dict] = {}
+    home_cat = CATEGORY_MAP_HOME.get(payload.category)
+    other_cat = CATEGORY_MAP_OTHER.get(payload.category)
+    if db_quota == "MH" and payload.home_university and home_cat and other_cat and grouped:
+        keys = list(grouped.keys())
+        ho_rows = db.execute(
+            select(
+                CutoffHistory.institute_code,
+                CutoffHistory.choice_code,
+                CutoffHistory.level,
+                CutoffHistory.category,
+                CutoffHistory.year,
+                CutoffHistory.round,
+                CutoffHistory.percentile,
+            )
+            .where(
+                tuple_(CutoffHistory.institute_code, CutoffHistory.choice_code).in_(keys),
+                CutoffHistory.quota == "MH",
+                CutoffHistory.level.in_([LEVEL_HOME_TO_HOME, LEVEL_HOME_TO_OTHER, LEVEL_OTHER_TO_HOME, LEVEL_OTHER_TO_OTHER]),
+                CutoffHistory.category.in_([home_cat, other_cat]),
+            )
+            .order_by(
+                CutoffHistory.institute_code, CutoffHistory.choice_code, CutoffHistory.level,
+                CutoffHistory.year.desc(), CutoffHistory.round.desc(),
+            )
+        ).all()
+        ho_latest: dict[tuple[str, str, str], object] = {}
+        for r in ho_rows:
+            key = (r.institute_code, r.choice_code, r.level)
+            ho_latest.setdefault(key, r)  # first row per group is latest, given the ORDER BY above
+
+        for (institute_code, choice_code), group_rows in grouped.items():
+            college_home_uni = group_rows[0].home_university
+            if college_home_uni in NON_AFFILIATED_HOME_UNIVERSITY_VALUES:
+                continue  # autonomous/deemed institutes have no H/O split to check
+            is_home_match = college_home_uni == payload.home_university
+            candidate_levels = (
+                [LEVEL_HOME_TO_HOME, LEVEL_OTHER_TO_HOME] if is_home_match else [LEVEL_HOME_TO_OTHER, LEVEL_OTHER_TO_OTHER]
+            )
+            best_row = None
+            for level_name in candidate_levels:
+                row = ho_latest.get((institute_code, choice_code, level_name))
+                if row and (best_row is None or row.percentile < best_row.percentile):
+                    best_row = row
+            if best_row:
+                home_uni_best[(institute_code, choice_code)] = {
+                    "percentile": best_row.percentile,
+                    "level": best_row.level,
+                    "year": best_row.year,
+                    "round": best_row.round,
+                }
+
     matches = []
     for (institute_code, choice_code), group_rows in grouped.items():
         latest = group_rows[0]  # rows are ordered year DESC, round DESC per group
-        history = [{"year": r.year, "round": r.round, "percentile": round(r.percentile, 2)} for r in group_rows]
+        history = [{"year": r.year, "round": r.round, "percentile": round(r.percentile, 2), "level": "State Level"} for r in group_rows]
+
+        # Prefer the Home/Other-University route if it's a genuinely better (lower) cutoff
+        # than State Level for this student at this college.
+        effective_percentile, effective_year, effective_round, effective_level = (
+            latest.percentile, latest.year, latest.round, "State Level"
+        )
+        ho_best = home_uni_best.get((institute_code, choice_code))
+        if ho_best and ho_best["percentile"] < effective_percentile:
+            effective_percentile = ho_best["percentile"]
+            effective_year, effective_round, effective_level = ho_best["year"], ho_best["round"], ho_best["level"]
+            history.append({"year": ho_best["year"], "round": ho_best["round"], "percentile": round(ho_best["percentile"], 2), "level": ho_best["level"]})
 
         trend = "stable"
         distinct_years = sorted({r.year for r in group_rows}, reverse=True)
@@ -374,7 +490,7 @@ def predict_colleges(payload: StudentProfile, db: Session = Depends(get_db)):
                 diff = latest.percentile - prev_row.percentile
                 trend = "up" if diff > 0.5 else "down" if diff < -0.5 else "stable"
 
-        chance = classify_score(score, latest.percentile)
+        chance = classify_score(score, effective_percentile)
 
         matches.append(
             {
@@ -387,9 +503,10 @@ def predict_colleges(payload: StudentProfile, db: Session = Depends(get_db)):
                 "category": payload.category if db_quota == "MH" else category_filter,
                 "quota": db_quota,
                 "merit_exam": merit_exam_filter,
-                "cutoff": round(latest.percentile, 2),
-                "cutoff_year": latest.year,
-                "cutoff_round": latest.round,
+                "cutoff": round(effective_percentile, 2),
+                "cutoff_year": effective_year,
+                "cutoff_round": effective_round,
+                "cutoff_level": effective_level,
                 "your_score": round(score, 2),
                 "chance": chance,
                 "trend": trend,
