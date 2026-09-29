@@ -82,6 +82,8 @@ export default function PredictorPage() {
   const [collegeSearch, setCollegeSearch] = useState("");
   const [collegeResults, setCollegeResults] = useState<{ id: string; name: string; status: string | null }[]>([]);
   const [collegeSearchLoading, setCollegeSearchLoading] = useState(false);
+  const [preferredDistricts, setPreferredDistricts] = useState<string[]>([]);
+  const [districts, setDistricts] = useState<{ name: string; college_count: number }[]>([]);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/universities`)
@@ -90,6 +92,13 @@ export default function PredictorPage() {
         if (data?.items?.length) setUniversities(data.items);
       })
       .catch((error) => console.warn("Universities API unavailable.", error));
+
+    fetch(`${API_BASE_URL}/districts`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.items?.length) setDistricts(data.items);
+      })
+      .catch((error) => console.warn("Districts API unavailable.", error));
   }, []);
 
   useEffect(() => {
@@ -149,7 +158,7 @@ export default function PredictorPage() {
       home_university: quota === "MH" && homeUniversity ? homeUniversity : null,
       preferred_branches: formData.preferred_branches,
       preferred_colleges: preferredColleges.map((c) => c.id),
-      preferred_districts: ["Pune", "Mumbai"],
+      preferred_districts: preferredDistricts,
     };
 
     try {
@@ -428,6 +437,37 @@ export default function PredictorPage() {
                     (still narrowed by Preferred Branches above).
                   </span>
                 </label>
+
+                <label className="space-y-2 md:col-span-2">
+                  <span className="text-sm font-medium text-slate-700">Preferred Districts (optional)</span>
+                  <div className="flex flex-wrap gap-2">
+                    {districts.slice(0, 12).map((d) => {
+                      const selected = preferredDistricts.includes(d.name);
+                      return (
+                        <button
+                          key={d.name}
+                          type="button"
+                          onClick={() => {
+                            setPreferredDistricts((prev) =>
+                              selected ? prev.filter((item) => item !== d.name) : [...prev, d.name]
+                            );
+                          }}
+                          className={`rounded-full border px-3 py-1.5 text-sm font-medium ${
+                            selected
+                              ? "border-emerald-500 bg-emerald-100 text-emerald-700"
+                              : "border-slate-300 bg-slate-50 text-slate-700"
+                          }`}
+                        >
+                          {d.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <span className="block text-xs text-slate-500">
+                    Doesn't hide other colleges - just ranks colleges in your preferred districts higher within each
+                    chance tier. District is best-effort (parsed from college names, not all colleges have one yet).
+                  </span>
+                </label>
               </div>
 
               <button
@@ -525,7 +565,10 @@ export default function PredictorPage() {
                 {(result?.colleges ?? fallbackPrediction.colleges).map((college: any) => (
                   <tr key={college.id} className="border-t border-slate-200 text-slate-700">
                     <td className="px-4 py-3 font-semibold text-slate-900">{college.college_name}</td>
-                    <td className="px-4 py-3">{college.status ?? "—"}</td>
+                    <td className="px-4 py-3">
+                      {college.status ?? "—"}
+                      {college.district && <span className="block text-xs text-slate-400">{college.district}</span>}
+                    </td>
                     <td className="px-4 py-3">{college.branch}</td>
                     <td className="px-4 py-3">
                       {college.cutoff}%

@@ -6,12 +6,21 @@ import { useEffect, useState } from "react";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://mahapredict.onrender.com";
 const PAGE_SIZE = 24;
 
-const fallbackColleges = [
+const fallbackColleges: {
+  id: string;
+  name: string;
+  status: string;
+  home_university: string;
+  district: string | null;
+  website: string;
+  branches: string[];
+}[] = [
   {
     id: "coep-pune",
     name: "COEP Technological University",
     status: "Government Autonomous",
     home_university: "Autonomous Institute",
+    district: "Pune",
     website: "https://www.coeptech.ac.in/",
     branches: ["Computer Science", "Information Technology", "Electronics"],
   },
@@ -20,6 +29,7 @@ const fallbackColleges = [
     name: "VJTI Mumbai",
     status: "Government Autonomous",
     home_university: "Autonomous Institute",
+    district: "Mumbai",
     website: "https://www.vjti.ac.in/",
     branches: ["Computer Science", "Electronics", "Mechanical"],
   },
@@ -28,6 +38,7 @@ const fallbackColleges = [
     name: "Sardar Patel Institute of Technology",
     status: "Un-Aided Autonomous",
     home_university: "Mumbai University",
+    district: "Mumbai",
     website: "https://www.spit.ac.in/",
     branches: ["Information Technology", "Computer Science"],
   },
@@ -39,7 +50,18 @@ export default function CollegesPage() {
   const [page, setPage] = useState(0);
   const [branchFilter, setBranchFilter] = useState("");
   const [branchInput, setBranchInput] = useState("");
+  const [districtFilter, setDistrictFilter] = useState("");
+  const [districts, setDistricts] = useState<{ name: string; college_count: number }[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/districts`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.items?.length) setDistricts(data.items);
+      })
+      .catch((error) => console.warn("Districts API unavailable.", error));
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -51,6 +73,7 @@ export default function CollegesPage() {
           offset: String(page * PAGE_SIZE),
         });
         if (branchFilter) params.set("branch", branchFilter);
+        if (districtFilter) params.set("district", districtFilter);
 
         const response = await fetch(`${API_BASE_URL}/colleges?${params}`, { signal: controller.signal });
         if (!response.ok) return;
@@ -70,7 +93,7 @@ export default function CollegesPage() {
 
     loadColleges();
     return () => controller.abort();
-  }, [page, branchFilter]);
+  }, [page, branchFilter, districtFilter]);
 
   const totalPages = total ? Math.max(1, Math.ceil(total / PAGE_SIZE)) : 1;
 
@@ -89,34 +112,51 @@ export default function CollegesPage() {
             <h1 className="mt-3 text-4xl font-black text-white md:text-5xl">Maharashtra Engineering Colleges</h1>
             {total !== null && (
               <p className="mt-2 text-sm text-slate-300">
-                {total} college{total === 1 ? "" : "s"}{branchFilter ? ` offering "${branchFilter}"` : ""}
+                {total} college{total === 1 ? "" : "s"}
+                {branchFilter ? ` offering "${branchFilter}"` : ""}
+                {districtFilter ? ` in ${districtFilter}` : ""}
               </p>
             )}
           </div>
-          <form onSubmit={handleSearch} className="flex gap-2">
-            <input
-              value={branchInput}
-              onChange={(e) => setBranchInput(e.target.value)}
-              placeholder="Search by branch (e.g. Computer)"
-              className="w-56 rounded-full border border-white/20 bg-white/10 px-4 py-2.5 text-sm text-white placeholder:text-slate-400 outline-none focus:border-emerald-400"
-            />
-            <button type="submit" className="rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-600">
-              Search
-            </button>
-            {branchFilter && (
-              <button
-                type="button"
-                onClick={() => {
-                  setBranchInput("");
-                  setBranchFilter("");
-                  setPage(0);
-                }}
-                className="rounded-full bg-white/10 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/20 hover:bg-white/20"
-              >
-                Clear
+          <div className="flex flex-wrap items-end gap-2">
+            <select
+              value={districtFilter}
+              onChange={(e) => {
+                setDistrictFilter(e.target.value);
+                setPage(0);
+              }}
+              className="rounded-full border border-white/20 bg-white/10 px-4 py-2.5 text-sm text-white outline-none focus:border-emerald-400 [&>option]:text-slate-900"
+            >
+              <option value="">All districts</option>
+              {districts.map((d) => (
+                <option key={d.name} value={d.name}>{d.name} ({d.college_count})</option>
+              ))}
+            </select>
+            <form onSubmit={handleSearch} className="flex gap-2">
+              <input
+                value={branchInput}
+                onChange={(e) => setBranchInput(e.target.value)}
+                placeholder="Search by branch (e.g. Computer)"
+                className="w-56 rounded-full border border-white/20 bg-white/10 px-4 py-2.5 text-sm text-white placeholder:text-slate-400 outline-none focus:border-emerald-400"
+              />
+              <button type="submit" className="rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-600">
+                Search
               </button>
-            )}
-          </form>
+              {branchFilter && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBranchInput("");
+                    setBranchFilter("");
+                    setPage(0);
+                  }}
+                  className="rounded-full bg-white/10 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/20 hover:bg-white/20"
+                >
+                  Clear
+                </button>
+              )}
+            </form>
+          </div>
         </div>
 
         <div className={`grid gap-6 md:grid-cols-2 xl:grid-cols-3 ${loading ? "opacity-50" : ""}`}>
@@ -125,7 +165,10 @@ export default function CollegesPage() {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-xl font-bold text-white">{college.name}</p>
-                  <p className="mt-2 text-sm text-slate-200">{college.status}</p>
+                  <p className="mt-2 text-sm text-slate-200">
+                    {college.status}
+                    {college.district ? ` · ${college.district}` : ""}
+                  </p>
                 </div>
               </div>
 

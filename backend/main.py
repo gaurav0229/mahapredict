@@ -263,10 +263,26 @@ def dashboard_summary(db: Session = Depends(get_db)) -> dict:
     }
 
 
+@app.get("/districts")
+def get_districts(db: Session = Depends(get_db)) -> dict:
+    """Districts with at least one college - for the colleges/predictor district filters.
+    District is best-effort (parsed from institute names, ~80% coverage, see
+    enrich_college_location.py) - informational/soft-ranking only, never a hard filter
+    on /predict, since the other 20% would be wrongly excluded."""
+    rows = db.execute(
+        select(College.district, func.count())
+        .where(College.district.is_not(None))
+        .group_by(College.district)
+        .order_by(func.count().desc())
+    ).all()
+    return {"items": [{"name": name, "college_count": count} for name, count in rows]}
+
+
 @app.get("/colleges")
 def get_colleges(
     branch: str | None = None,
     name: str | None = None,
+    district: str | None = None,
     limit: int = 20,
     offset: int = 0,
     db: Session = Depends(get_db),
@@ -286,6 +302,9 @@ def get_colleges(
     if name:
         base_query = base_query.where(College.name.ilike(f"%{name}%"))
         count_query = count_query.where(College.name.ilike(f"%{name}%"))
+    if district:
+        base_query = base_query.where(College.district == district)
+        count_query = count_query.where(College.district == district)
 
     total = db.execute(count_query).scalar() or 0
     query = base_query.distinct().order_by(College.name).limit(limit).offset(offset)
@@ -297,6 +316,8 @@ def get_colleges(
             "name": college.name,
             "status": college.status,
             "home_university": college.home_university,
+            "city": college.city,
+            "district": college.district,
             "website": college.official_website,
             "branches": [b.course_name for b in college.branches],
         }
@@ -329,6 +350,8 @@ def get_college(institute_code: str, db: Session = Depends(get_db)):
         "name": college.name,
         "status": college.status,
         "home_university": college.home_university,
+        "city": college.city,
+        "district": college.district,
         "website": college.official_website,
         "branches": [
             {
@@ -379,6 +402,8 @@ def predict_colleges(payload: StudentProfile, db: Session = Depends(get_db)):
             College.name.label("college_name"),
             College.status,
             College.home_university,
+            College.city,
+            College.district,
             College.official_website,
             CutoffHistory.year,
             CutoffHistory.round,
@@ -524,6 +549,8 @@ def predict_colleges(payload: StudentProfile, db: Session = Depends(get_db)):
                 "college_name": latest.college_name,
                 "status": latest.status,
                 "home_university": latest.home_university,
+                "city": latest.city,
+                "district": latest.district,
                 "website": latest.official_website,
                 "branch": latest.course_name,
                 "category": payload.category if db_quota == "MH" else category_filter,
@@ -541,7 +568,18 @@ def predict_colleges(payload: StudentProfile, db: Session = Depends(get_db)):
             }
         )
 
-    matches.sort(key=lambda item: (CHANCE_RANK[item["chance"]], -item["cutoff"]))
+    # preferred_districts is a soft ranking boost, not a hard filter - district is only
+    # ~80% populated (best-effort, parsed from institute names; see
+    # enrich_college_location.py), so hard-filtering would wrongly hide the other 20%
+    # that just have no parsed district, not a real mismatch.
+    preferred_districts_lower = {d.strip().lower() for d in payload.preferred_districts if d.strip()}
+    matches.sort(
+        key=lambda item: (
+            CHANCE_RANK[item["chance"]],
+            0 if (item["district"] or "").lower() in preferred_districts_lower else 1,
+            -item["cutoff"],
+        )
+    )
 
     summary = {
         "total_colleges": len(matches),
