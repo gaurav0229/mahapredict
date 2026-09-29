@@ -50,11 +50,17 @@ CREATE TABLE IF NOT EXISTS cutoff_history (
     stage VARCHAR(30) NOT NULL,           -- I / II / ... - some legacy-template PDFs (e.g.
                                            -- 2023 CAP3) use compound labels like "I-Non Defence"
     category VARCHAR(30) NOT NULL,        -- e.g. GOPENS, LOBCH, GOPENO, EWS, TFWS, AI
+    merit_exam VARCHAR(20) NOT NULL,      -- MHT-CET / JEE / NEET / DIPLOMA - the scale the
+                                           -- percentile is on. AI-quota rows mix JEE(Main) NTA
+                                           -- percentile, MHT-CET percentile and (rarely) NEET
+                                           -- score under one column; comparing a student's score
+                                           -- against a row on the wrong scale would be silently
+                                           -- wrong, so this must be checked before comparing.
     merit_rank INTEGER NOT NULL,
     percentile DOUBLE PRECISION NOT NULL,
     source_pdf VARCHAR(120),
     FOREIGN KEY (institute_code, choice_code) REFERENCES branches(institute_code, choice_code) ON DELETE CASCADE,
-    UNIQUE (institute_code, choice_code, year, round, quota, level, stage, category)
+    UNIQUE (institute_code, choice_code, year, round, quota, level, stage, category, merit_exam)
 );
 
 CREATE TABLE IF NOT EXISTS seat_matrix (

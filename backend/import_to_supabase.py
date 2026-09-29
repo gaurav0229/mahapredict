@@ -19,8 +19,11 @@ retry after a failure doesn't error out or double-count.
 
 Usage:
     .venv/Scripts/python.exe import_to_supabase.py
-Reads DATABASE_URL from the environment, or prompts for the password
-(project ref/host are fixed since this always targets the same project).
+Reads DATABASE_URL from backend/.env (same one database.py/main.py use) or the
+environment. Must be Supabase's session-pooler connection string, not the
+direct host - the direct host (db.<ref>.supabase.co) is IPv6-only and
+unreachable from most hosting providers (see backend/database.py's comment
+and the "mahapredict-deployment" memory for why).
 """
 
 from __future__ import annotations
@@ -28,26 +31,28 @@ from __future__ import annotations
 import os
 import sys
 import time
-import urllib.parse
 from pathlib import Path
 
 import psycopg
+from dotenv import load_dotenv
 
 BASE = Path(__file__).resolve().parent
 IMPORT_DIR = BASE / "supabase_import"
-HOST = "db.bxztoryknmcwpdmiwthx.supabase.co"
+
+load_dotenv(BASE / ".env")
 
 
 def get_database_url() -> str:
     url = os.getenv("DATABASE_URL")
-    if url:
-        return url
-    pwd = os.getenv("SUPABASE_DB_PASSWORD")
-    if not pwd:
-        import getpass
-
-        pwd = getpass.getpass("Supabase DB password: ")
-    return f"postgresql://postgres:{urllib.parse.quote(pwd, safe='')}@{HOST}:5432/postgres"
+    if not url:
+        raise RuntimeError(
+            "DATABASE_URL is not set. Add it to backend/.env (the Supabase session-pooler "
+            "connection string - see backend/database.py's comment for why it must be the "
+            "pooler, not the direct host)."
+        )
+    # database.py/SQLAlchemy use the "postgresql+psycopg://" scheme; plain psycopg (used
+    # directly here for COPY support) needs the bare "postgresql://" scheme.
+    return url.replace("postgresql+psycopg://", "postgresql://", 1)
 
 
 def copy_csv(cur, csv_path: Path, table: str, columns: list[str]):
@@ -65,7 +70,8 @@ def copy_csv(cur, csv_path: Path, table: str, columns: list[str]):
 
 def main():
     url = get_database_url()
-    print(f"Connecting to {HOST} ...")
+    host = url.split("@")[-1].split("/")[0]
+    print(f"Connecting to {host} ...")
     conn = psycopg.connect(url, connect_timeout=20)
     conn.autocommit = False
 
@@ -85,7 +91,8 @@ def main():
                 """
                 CREATE TEMP TABLE stg_cutoff (
                     institute_code TEXT, choice_code TEXT, year TEXT, round TEXT, quota TEXT,
-                    level TEXT, stage TEXT, category TEXT, merit_rank TEXT, percentile TEXT, source_pdf TEXT
+                    level TEXT, stage TEXT, category TEXT, merit_exam TEXT, merit_rank TEXT,
+                    percentile TEXT, source_pdf TEXT
                 ) ON COMMIT DROP
                 """
             )
@@ -93,29 +100,32 @@ def main():
                 cur,
                 IMPORT_DIR / "cutoff_history.csv",
                 "stg_cutoff",
-                ["institute_code", "choice_code", "year", "round", "quota", "level", "stage", "category", "merit_rank", "percentile", "source_pdf"],
+                ["institute_code", "choice_code", "year", "round", "quota", "level", "stage", "category", "merit_exam", "merit_rank", "percentile", "source_pdf"],
             )
             t0 = time.time()
             # A single INSERT ... ON CONFLICT can't touch the same conflict key twice in
             # one statement (Postgres raises CardinalityViolation) - and the AI-quota
             # merit list can have 2-4 rows sharing a key (multiple admitted candidates
-            # under one coarse category label). Dedupe within the staging data first via
-            # DISTINCT ON, keeping the worst (lowest) percentile per key, THEN insert.
+            # under one coarse category label, same merit_exam). Dedupe within the staging
+            # data first via DISTINCT ON, keeping the worst (lowest) percentile per key,
+            # THEN insert. merit_exam is part of the key so a JEE-scale and a CET-scale
+            # cutoff sharing the same category (e.g. both "AI") are kept as separate rows,
+            # not collapsed into one.
             cur.execute(
                 """
                 INSERT INTO cutoff_history
-                    (institute_code, choice_code, year, round, quota, level, stage, category, merit_rank, percentile, source_pdf)
-                SELECT institute_code, choice_code, year::int, round, quota, level, stage, category,
+                    (institute_code, choice_code, year, round, quota, level, stage, category, merit_exam, merit_rank, percentile, source_pdf)
+                SELECT institute_code, choice_code, year::int, round, quota, level, stage, category, merit_exam,
                        merit_rank::int, percentile::double precision, source_pdf
                 FROM (
-                    SELECT DISTINCT ON (institute_code, choice_code, year, round, quota, level, stage, category)
-                        institute_code, choice_code, year, round, quota, level, stage, category,
+                    SELECT DISTINCT ON (institute_code, choice_code, year, round, quota, level, stage, category, merit_exam)
+                        institute_code, choice_code, year, round, quota, level, stage, category, merit_exam,
                         merit_rank, percentile, source_pdf
                     FROM stg_cutoff
-                    ORDER BY institute_code, choice_code, year, round, quota, level, stage, category,
+                    ORDER BY institute_code, choice_code, year, round, quota, level, stage, category, merit_exam,
                              percentile::double precision ASC
                 ) dedup
-                ON CONFLICT (institute_code, choice_code, year, round, quota, level, stage, category)
+                ON CONFLICT (institute_code, choice_code, year, round, quota, level, stage, category, merit_exam)
                 DO UPDATE SET
                     merit_rank = EXCLUDED.merit_rank,
                     percentile = EXCLUDED.percentile,

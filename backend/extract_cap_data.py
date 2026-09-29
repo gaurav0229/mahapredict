@@ -296,6 +296,7 @@ def parse_mh_cutoff_pdf(path: Path, year: str, round_name: str, quota: str):
                                 "level": level_name,
                                 "stage": stage,
                                 "category": category,
+                                "merit_exam": "MHT-CET",
                                 "merit_rank": rm.group(1).replace(",", ""),
                                 "percentile": rm.group(2),
                                 "source_pdf": path.name,
@@ -304,6 +305,22 @@ def parse_mh_cutoff_pdf(path: Path, year: str, round_name: str, quota: str):
                 pending_level = None
 
     return list(college_rows.values()), list(branch_rows.values()), cutoff_rows
+
+
+def normalize_merit_exam(raw: str) -> str:
+    """AI-quota rows report the merit score on one of several different scales -
+    JEE(Main) NTA percentile, MHT-CET percentile, or (rarely) NEET score - under a
+    'Merit Exam' column with year-suffixed variants ('JEE(Main)-2026', 'MHT-CET-PCB
+    2026'). Comparing a student's score against these without knowing which exam's
+    scale applies would silently mix incompatible percentile pools."""
+    raw = (raw or "").upper()
+    if "JEE" in raw:
+        return "JEE"
+    if "CET" in raw:
+        return "MHT-CET"
+    if "NEET" in raw:
+        return "NEET"
+    return raw.strip() or "UNKNOWN"
 
 
 def parse_simple_cutoff_pdf(path: Path, year: str, round_name: str, quota: str):
@@ -331,7 +348,29 @@ def parse_simple_cutoff_pdf(path: Path, year: str, round_name: str, quota: str):
                     choice_code_raw = clean_cell_number(row[2])
                     institute_cell = clean_cell_number(row[3])
                     course_name = clean_cell_number(row[4]) if len(row) > 4 else ""
-                    seat_type = clean_cell_number(row[-1]) if len(row) > 5 else quota
+
+                    # AI-quota rows: [Sr, Merit, Code, Institute, Course, MeritExam, Type, SeatType].
+                    # Diploma-quota rows: [Sr, Merit, Code, Institute, Course, QualifyingExam] - one
+                    # homogeneous scale, no separate Type/SeatType split needed.
+                    merit_exam_raw = ""
+                    seat_type = ""
+                    if quota == "AI" and len(row) >= 8:
+                        merit_exam_raw = clean_cell_number(row[5])
+                        type_field = clean_cell_number(row[6])
+                        seat_type = clean_cell_number(row[7])
+                        if not seat_type:
+                            # A wrapped row can merge Type + SeatType into one cell
+                            # ("AI to AI AI", "MH to AI GNT2H") with the next cell blank -
+                            # split it back apart rather than losing the category.
+                            m = re.match(r"^((?:AI|MH|MI)\s+to\s+AI)\s*(\S*)$", type_field, re.IGNORECASE)
+                            if m:
+                                seat_type = m.group(2) or "AI"
+                    elif quota == "AI":
+                        merit_exam_raw = clean_cell_number(row[5]) if len(row) > 5 else ""
+                        seat_type = clean_cell_number(row[-1]) if len(row) > 6 else ""
+                    else:
+                        merit_exam_raw = clean_cell_number(row[-1]) if len(row) > 5 else ""
+                        seat_type = merit_exam_raw
 
                     rm = RANK_PCT_RE.match(merit_cell)
                     im = INSTITUTE_RE.match(institute_cell)
@@ -339,6 +378,7 @@ def parse_simple_cutoff_pdf(path: Path, year: str, round_name: str, quota: str):
                         continue
                     choice_code = norm_choice(choice_code_raw)
                     institute_code, institute_name = norm_institute(im.group(1)), im.group(2).strip()
+                    merit_exam = normalize_merit_exam(merit_exam_raw) if quota == "AI" else "DIPLOMA"
 
                     college_rows.setdefault(
                         institute_code,
@@ -358,6 +398,7 @@ def parse_simple_cutoff_pdf(path: Path, year: str, round_name: str, quota: str):
                             "level": "All India" if quota == "AI" else "Diploma",
                             "stage": "I",
                             "category": seat_type or quota,
+                            "merit_exam": merit_exam,
                             "merit_rank": rm.group(1).replace(",", ""),
                             "percentile": rm.group(2),
                             "source_pdf": path.name,
@@ -525,7 +566,7 @@ def parse_seat_matrix_pdf(path: Path, year: str):
 PARTS_DIR = IMPORT_DIR / "_parts"
 COLLEGE_FIELDS = ["institute_code", "name", "status", "home_university"]
 BRANCH_FIELDS = ["institute_code", "choice_code", "course_name"]
-CUTOFF_FIELDS = ["institute_code", "choice_code", "year", "round", "quota", "level", "stage", "category", "merit_rank", "percentile", "source_pdf"]
+CUTOFF_FIELDS = ["institute_code", "choice_code", "year", "round", "quota", "level", "stage", "category", "merit_exam", "merit_rank", "percentile", "source_pdf"]
 SEAT_FIELDS = ["institute_code", "choice_code", "year", "level", "category", "gender", "seats", "source_pdf"]
 
 
